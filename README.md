@@ -5,10 +5,10 @@ Repositório para o trabalho de compiladores
 
 - [ ] - Contagem de linhas
 - [ ] - Ignorar Comentários e Espaços
-- [ ] - Lançar erros léxicos
-- [ ] - Tokens para palavras reservadas
-- [ ] - Tokens para caracteres especiais
-- [ ] - Tokens para Operadores Compostos
-- [ ] - Tokens para identificadores
-- [ ] - Tokens para literais
+- [X] - Lançar erros léxicos
+- [X] - Tokens para palavras reservadas
+- [X] - Tokens para caracteres especiais
+- [X] - Tokens para Operadores Compostos
+- [X] - Tokens para identificadores
+- [X] - Tokens para literais
 
