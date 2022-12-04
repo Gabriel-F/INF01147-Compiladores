@@ -1,7 +1,7 @@
 # INF01147-Compiladores
 Repositório para o trabalho de compiladores
 
-#ETAPA 1
+# ETAPA 1
 
 - [ ] - Contagem de linhas
 - [ ] - Ignorar Comentários e Espaços
