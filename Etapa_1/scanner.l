@@ -14,10 +14,16 @@ float ({integer})("."{integer})$
 special [-,;:\(\)\[\]\{\}+*/<>=]
 char [A-z]
 
+%x IN_COMMENT
 %%
-
-
-"/*"(.*"\n"*)*"*/"      { }
+<INITIAL>{
+"/*"              BEGIN(IN_COMMENT);
+}
+<IN_COMMENT>{
+	"*/" BEGIN(INITIAL);
+	.  { }
+	\n { }
+}
 {white}   { }
 "\n" 	  { }
 

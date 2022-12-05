@@ -6,11 +6,21 @@ false
 2 <= 3
 2 < 3
 
+float 2.3456
 /* bool ISTO */
-float 2.345
-/* a
+
+true
+float 3.333
+
+/*
+ a
 É UM COMENTARIO
 IGNORE */
+
+int abc
+
+identificador23
+bool
 
 /* 
 ISTO É
