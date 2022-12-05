@@ -3,8 +3,9 @@ Repositório para o trabalho de compiladores
 
 # ETAPA 1
 
-- [ ] - Contagem de linhas
-- [ ] - Ignorar Comentários e Espaços
+- [ ] - Testar
+- [X] - Contagem de linhas
+- [X] - Ignorar Comentários e Espaços
 - [X] - Lançar erros léxicos
 - [X] - Tokens para palavras reservadas
 - [X] - Tokens para caracteres especiais

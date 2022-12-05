@@ -6,3 +6,15 @@ false
 2 <= 3
 2 < 3
 
+/* bool ISTO */
+float 2.345
+/* a
+É UM COMENTARIO
+IGNORE */
+
+/* 
+ISTO É
+/* UM COMENTARIO
+COMPLEXO POIS TEM 2 "/*", agora tem 3 */
+
+bool verdadeiro = true

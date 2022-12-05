@@ -5,8 +5,6 @@
 # include <stdio.h>
 # include "tokens.h"
 
-int lineno = 0;
-
 %}
 
 white [ \t]+
@@ -18,8 +16,10 @@ char [A-z]
 
 %%
 
+
+"/*"(.*"\n"*)*"*/"      { }
 {white}   { }
-"\n"	{lineno++;}
+"\n" 	  { }
 
 "int"     {return TK_PR_INT;}
 "float"   {return TK_PR_FLOAT;}
@@ -45,7 +45,7 @@ char [A-z]
 {float}   {return TK_LIT_FLOAT;}
 "false"   {return TK_LIT_FALSE;}
 "true"    {return TK_LIT_TRUE;}
-{char}[[:alnum:]_]*     {return TK_IDENTIFICADOR;}
+[A-z]+     {return TK_IDENTIFICADOR;}
 "'"."'"   {return TK_LIT_CHAR;}
 {special} {return yytext[0];}
 
@@ -55,6 +55,6 @@ char [A-z]
 
 
 int get_line_number(){
-	return lineno; //Precisa considerar \n nos comentarios também
+	return yylineno; //Precisa considerar \n nos comentarios também
 	
 }
