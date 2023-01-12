@@ -129,6 +129,8 @@ argumento: literal | TK_IDENTIFICADOR |  | expressao;
 
 chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')'
 
+retorno: TK_PR_RETURN expressao;
+
 
 
 %%
