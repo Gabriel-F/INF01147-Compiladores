@@ -102,10 +102,32 @@ b = 3;
 var = variavel[2^a+b];
 var = variavel[abc[2^3] ^ 34];
 
+funcao(a + 3, foo(3));
 
-arranjo_atribuicao: TK_IDENTFICADOR '[' lista_expressoes ']';
+funcao(a + b, 34);
 
-atribuicao:  '=' expressao ;
+funcao(var);
+
+a;
+
+TK_IDENTIFICADOR = expressao?
+
+Conforme o enunciado, as expressoes tem operandos E operadores, logo um identficador sozinho não é considerado uma expressão? 
+Se sim, então não tem como haver a seuginte chamada de função: foo(var);?
+
+
+
+lista_expressoes: TO_DO;
+
+identificador_atribuicao: TK_IDENTIFICADOR | TK_IDENTFICADOR '[' lista_expressoes ']';
+
+atribuicao: identificador_atribuicao '=' expressao ;
+
+lista_argumentos: argumentos_entrada | ;
+argumentos_entrada: argumentos_entrada ',' argumento | argumento;
+argumento: literal | TK_IDENTIFICADOR |  | expressao;
+
+chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')'
 
 
 
