@@ -1,0 +1,16 @@
+TEste
+int a = 3
+false
+()
+1 + 1
+
+// Isso é um comentario
+
+int b = a
+
+/* Comentario multilinha
+   Testando
+	Teste
+*/
+
+int c = 3
