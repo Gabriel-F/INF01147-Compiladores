@@ -2,14 +2,14 @@ etapa2: .FORCE
 	flex scanner.l
 	bison -d parser.y
 	gcc -c lex.yy.c parser.tab.c
-	gcc -o parser lex.yy.o parser.tab.o
+	gcc -c main.c	
+	gcc -o etapa2 lex.yy.o parser.tab.o main.o
 
 etapa1MAC: .FORCE
 	flex scanner.l
 	gcc -c main.c
 	gcc -c lex.yy.c
 	gcc -o etapa1 lex.yy.o main.o
-
 
 
 

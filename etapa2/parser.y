@@ -1,4 +1,6 @@
 %{
+#include <stdio.h>
+
 int yylex(void);
 void yyerror (char const *s);
 %}
@@ -34,25 +36,82 @@ void yyerror (char const *s);
 programa: lista_de_elementos;
 programa: ;
 
-lista_de_elementos: lista_de_elementos funcao;
-lista_de_elementos: lista_de_elementos declaracao_var;
-lista_de_elementos: funcao;
-lista_de_elementos: declaracao_var;
+lista_de_elementos: lista_de_elementos declaracao_funcao;
+lista_de_elementos: lista_de_elementos declaracao_var_global;
+lista_de_elementos: declaracao_funcao;
+lista_de_elementos: declaracao_var_global;
 
 tipo: TK_PR_INT | TK_PR_FLOAT | TK_PR_BOOL | TK_PR_CHAR;
 
-declaracao_var: tipo lista_de_identificadores;
+lista_dimensional: TK_LIT_INT;
+lista_dimensional: lista_dimensional '^' TK_LIT_INT;
+
+var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']';
+
+declaracao_var_global: tipo lista_de_identificadores ';';
 lista_de_identificadores: TK_IDENTIFICADOR;
-lista_de_identificadores: TK_IDENTIFICADOR ':' lista_literais;
+lista_de_identificadores: var_multidimensional;
 lista_de_identificadores: lista_de_identificadores ',' TK_IDENTIFICADOR;
+lista_de_identificadores: lista_de_identificadores ',' var_multidimensional;
 
-lista_literais: TK_PR_INT;
-lista_literais: lista_literais '^' TK_PR_INT;
 
-funcao: cabecalho corpo
-cabecalho: tipo TK_IDENTIFICADOR '(' lista_argumentos ')'
-lista_argumentos: lista_parametros | ;
-lista_parametros: lista_parametros ',' parametro | parametro;
-parametro: tipo TK_IDENTIFICADOR
+declaracao_funcao: cabecalho corpo;
+cabecalho: tipo TK_IDENTIFICADOR '(' lista_parametros ')';
+lista_parametros: parametros_entrada | ;
+parametros_entrada: parametros_entrada ',' parametro | parametro;
+parametro: tipo TK_IDENTIFICADOR;
 
-corpo : 'c'
+
+abc=2;c=2;
+
+int a,b;
+a=b;
+a
+
+
+{
+	int a;
+	{
+		int b;
+	}
+}
+
+corpo : bloco_comandos;
+bloco_comandos : '{' lista_comandos '}' | '{' '}';
+lista_comandos: lista_comandos comando ';' | comando ';';
+
+comando: declaracao_var_local | atribuicao | fluxo_controle | retorno | bloco_comandos | chamada_funcao;
+
+literal: TK_LIT_INT | TK_LIT_CHAR | TK_LIT_FALSE | TK_LIT_TRUE | TK_LIT_FLOAT;
+
+declaracao_var_local: tipo lista_de_identificadores_local;
+inic_var_local: TK_IDENTIFICADOR '<' '=' literal;
+identificador_local: TK_IDENTIFICADOR | inic_var_local ;
+lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local | identificador_local ;
+
+
+var[a + b ^ c + d] = variavel
+var = a;
+
+var = func(a,b);
+var = 42
+var = a
+a = 2;
+b = 3;
+
+var = variavel[2^a+b];
+var = variavel[abc[2^3] ^ 34];
+
+
+arranjo_atribuicao: TK_IDENTFICADOR '[' lista_expressoes ']';
+
+atribuicao:  '=' expressao ;
+
+
+
+%%
+
+void yyerror(char const *s){
+	printf("%s na linha: \n", s);
+	
+}
