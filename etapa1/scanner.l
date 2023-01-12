@@ -31,7 +31,6 @@ char [A-z]
 }
 {white}   { }
 "\n" 	  { }
-"//"	  	
 "int"     {return TK_PR_INT;}
 "float"   {return TK_PR_FLOAT;}
 "bool"    {return TK_PR_BOOL;}
@@ -65,7 +64,7 @@ char [A-z]
 %% 
 
 int get_line_number(){
-	return yylineno; //Precisa considerar \n nos comentarios também
+	return yylineno;
 	
 }
 
