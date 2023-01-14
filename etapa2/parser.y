@@ -4,6 +4,7 @@
 
 int yylex(void);
 void yyerror (char const *s);
+extern int get_line_number();
 %}
 
 %token TK_PR_INT
@@ -125,6 +126,6 @@ fluxo_controle: 'b'; //To Do
 %%
 
 void yyerror(char const *s){
-	printf("%s na linha: \n", s);
+	printf("%s na linha: %d\n", s,get_line_number());
 	
 }
