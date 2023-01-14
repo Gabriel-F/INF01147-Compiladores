@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#define YYERROR_VERBOSE 1
 
 int yylex(void);
 void yyerror (char const *s);
@@ -62,20 +63,6 @@ parametros_entrada: parametros_entrada ',' parametro | parametro;
 parametro: tipo TK_IDENTIFICADOR;
 
 
-abc=2;c=2;
-
-int a,b;
-a=b;
-a
-
-
-{
-	int a;
-	{
-		int b;
-	}
-}
-
 corpo : bloco_comandos;
 bloco_comandos : '{' lista_comandos '}' | '{' '}';
 lista_comandos: lista_comandos comando ';' | comando ';';
@@ -88,7 +75,7 @@ declaracao_var_local: tipo lista_de_identificadores_local;
 inic_var_local: TK_IDENTIFICADOR '<' '=' literal;
 identificador_local: TK_IDENTIFICADOR | inic_var_local ;
 lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local | identificador_local ;
-
+/*
 
 var[a + b ^ c + d] = variavel
 var = a;
@@ -117,21 +104,23 @@ Se sim, então não tem como haver a seuginte chamada de função: foo(var);?
 
 
 
-lista_expressoes: TO_DO;
-
-identificador_atribuicao: TK_IDENTIFICADOR | TK_IDENTFICADOR '[' lista_expressoes ']';
+*/
+lista_expressoes: '_'; //TO DO
+identificador_atribuicao: TK_IDENTIFICADOR | TK_IDENTIFICADOR '[' lista_expressoes ']';
 
 atribuicao: identificador_atribuicao '=' expressao ;
 
 lista_argumentos: argumentos_entrada | ;
 argumentos_entrada: argumentos_entrada ',' argumento | argumento;
-argumento: literal | TK_IDENTIFICADOR |  | expressao;
+argumento: literal | TK_IDENTIFICADOR | expressao;
 
 chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')'
 
 retorno: TK_PR_RETURN expressao;
 
+expressao: 'a'; //To do
 
+fluxo_controle: 'b'; //To Do
 
 %%
 
