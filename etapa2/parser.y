@@ -68,7 +68,7 @@ corpo : bloco_comandos;
 bloco_comandos : '{' lista_comandos '}' | '{' '}';
 lista_comandos: lista_comandos comando ';' | comando ';';
 
-comando: declaracao_var_local | atribuicao | fluxo_controle | retorno | bloco_comandos | chamada_funcao;
+comando: declaracao_var_local | atribuicao | controle_fluxo | retorno | bloco_comandos | chamada_funcao;
 
 literal: TK_LIT_INT | TK_LIT_CHAR | TK_LIT_FALSE | TK_LIT_TRUE | TK_LIT_FLOAT;
 
@@ -106,22 +106,39 @@ Se sim, então não tem como haver a seuginte chamada de função: foo(var);?
 
 
 */
-lista_expressoes: '_'; //TO DO
+lista_expressoes: expressao | lista_expressoes '^' expressao; //Correct?
 identificador_atribuicao: TK_IDENTIFICADOR | TK_IDENTIFICADOR '[' lista_expressoes ']';
 
 atribuicao: identificador_atribuicao '=' expressao ;
 
 lista_argumentos: argumentos_entrada | ;
 argumentos_entrada: argumentos_entrada ',' argumento | argumento;
-argumento: literal | TK_IDENTIFICADOR | expressao;
+argumento: literal | TK_IDENTIFICADOR | expressao | chamada_funcao; 
 
-chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')'
+chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')';
 
 retorno: TK_PR_RETURN expressao;
 
-expressao: 'a'; //To do
+op_binario: '+' | '-' | '*' | '/' | '%' | TK_OC_LE | TK_OC_GE | TK_OC_EQ | TK_OC_NE | TK_OC_AND | TK_OC_OR; 
+op_unario: '-' | '!';
 
-fluxo_controle: 'b'; //To Do
+
+expressao: op_unario op_binario; //TO - DO
+
+
+
+//expressao: TK_IDENTIFICADOR | literal | chamada_funcao; //To do
+//expressao: expressao op_binario expressao;
+//expressao: op_unario expressao;
+
+
+
+controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN bloco_comandos; //To Do
+controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN bloco_comandos TK_PR_ELSE bloco_comandos;
+controle_fluxo: TK_PR_WHILE '(' expressao ')' bloco_comandos;
+
+
+
 
 %%
 
