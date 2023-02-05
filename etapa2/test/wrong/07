@@ -1,9 +1,0 @@
-int main(){
-	while(exp != false){
-		if(exp) then{
-
-		}else{
-
-		}	
-	};
-}
