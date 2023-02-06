@@ -1,14 +1,16 @@
+%define parse.error verbose
 %{
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "ast.h"
 
 extern void *arvore;
-extern void exporta (void *arvore);
-extern void libera (void *arvore);
+//extern void exporta (void *arvore);
+//extern void libera (void *arvore);
 
 //#define YYERROR_VERBOSE 1
-//#define parse.error verbose 
+//#define parse.error verbose
 
 int yylex(void);
 void yyerror (char const *s);
@@ -18,13 +20,55 @@ extern int get_line_number();
 
 
 %union{
-	node_t *no;
-	valor_t *valor_lexico;
+	ASTNODE *no;
+	VALOR_T *valor_lexico;
 }
-%type<no> var_multidimensional; //Cabeça
-%type<no> J;
 
-%type <no> 
+%type<no> var_multidimensional; //Cabeça
+%type<no> programa;
+%type<no> lista_de_elementos;
+%type<no> tipo;
+%type<no> identificador;
+%type<no> lista_dimensional;
+%type<no> lista_dimensional_inteiro;
+%type<no> declaracao_var_global;
+%type<no> lista_de_identificadores;
+%type<no> declaracao_funcao;
+%type<no> cabecalho;
+%type<no> lista_parametros;
+%type<no> parametros_entrada;
+%type<no> parametro;
+%type<no> comando;
+%type<no> literal;
+%type<no> lista_comandos;
+%type<no> declaracao_var_local;
+%type<no> inic_var_local;
+%type<no> identificador_local;
+%type<no> lista_de_identificadores_local;
+%type<no> atribuicao;
+%type<no> corpo;
+%type<no> lista_argumentos;
+%type<no> argumentos_entrada;
+%type<no> argumento;
+%type<no> controle_fluxo;
+%type<no> controle_fluxo_while;
+%type<no> retorno;
+%type<no> chamada_funcao;
+%type<no> expressao;
+%type<no> bloco_comandos;
+%type<no> E;
+%type<no> T;
+%type<no> F;
+%type<no> G;
+%type<no> H;
+%type<no> I;
+%type<no> J;
+%type<no> K;
+%type<no> L;
+%type<no> operando;
+%type<no> identificador_expressao;
+%type<no> lista_expressoes;
+
 
 %token TK_PR_INT
 %token TK_PR_FLOAT
@@ -44,11 +88,11 @@ extern int get_line_number();
 %token TK_OC_NE
 %token TK_OC_AND
 %token TK_OC_OR
-%token TK_LIT_INT
-%token TK_LIT_FLOAT
-%token TK_LIT_FALSE
-%token TK_LIT_TRUE
-%token TK_LIT_CHAR
+%token <valor_lexico> TK_LIT_INT
+%token <valor_lexico> TK_LIT_FLOAT
+%token <valor_lexico> TK_LIT_FALSE
+%token <valor_lexico> TK_LIT_TRUE
+%token <valor_lexico> TK_LIT_CHAR
 %token <valor_lexico> TK_IDENTIFICADOR
 %token TK_ERRO
 
@@ -61,8 +105,8 @@ extern int get_line_number();
 -------------------------------------------------------------------------
 */
 
-programa: lista_de_elementos { arvore = $$;}; // REVISAR
-programa: ;
+programa: lista_de_elementos { arvore = $$; }; // REVISAR (ACHO Q TA CERTO)
+programa: { $$ = 0; };
 
 lista_de_elementos: lista_de_elementos declaracao_funcao { $$ = create_node($1, $2, 0, LIST_ELEM);};
 lista_de_elementos: lista_de_elementos declaracao_var_global { $$ = create_node($1, $2, 0, LIST_ELEM);};
@@ -80,19 +124,19 @@ lista_de_elementos: declaracao_var_global { $$ =$1 ;};
 // create_leaf(valor, nome_da_folha)
 
 
-tipo: TK_PR_INT { $$ = create_leaf($1, TIPO_INT); }; | 
-      TK_PR_FLOAT { $$ = create_leaf($1, TIPO_FLOAT); }; | 
-      TK_PR_BOOL { $$ = create_leaf($1, TIPO_BOOL); }; | 
-      TK_PR_CHAR { $$ = create_leaf($1, TIPO_CHAR); };
+tipo: TK_PR_INT { $$ = create_leaf(0, TIPO_INT); }; |  //REVISAR PERGUNTAR PARA O SOR
+      TK_PR_FLOAT { $$ = create_leaf(0, TIPO_FLOAT); }; | 
+      TK_PR_BOOL { $$ = create_leaf(0, TIPO_BOOL); }; | 
+      TK_PR_CHAR { $$ = create_leaf(0, TIPO_CHAR); };
 
-identificador : TK_IDENTIFICADOR { $$ = create_leaf($1, IDENTIFICADOR); }; //REVISAR (VALOR LEXICO)
+identificador : TK_IDENTIFICADOR { $$ = create_leaf($1, VAL_IDENTIFICADOR); }; 
 
 lista_dimensional_inteiro: TK_LIT_INT { $$ = create_leaf($1, LITERAL_INT);};
 lista_dimensional: lista_dimensional_inteiro { $$ =$1 ;};
 lista_dimensional: lista_dimensional '^' lista_dimensional_inteiro { $$ = create_node($1, $3, 0, LISTA_DIM);};
 var_multidimensional: identificador '[' lista_dimensional ']' { $$ = create_node($1, $3, 0, VAR_MULT);};
 
-declaracao_var_global: tipo lista_de_identificadores ';' { $$ = create_node($1, $2, 0, DEC_VAR_GLOBAL);};
+declaracao_var_global: tipo lista_de_identificadores ';' { $$ = $2; };//{ $$ = create_node($2, 0, 0, DEC_VAR_GLOBAL);};
 lista_de_identificadores: identificador { $$ = $1 ;};
 lista_de_identificadores: var_multidimensional { $$ = $1 ;};
 lista_de_identificadores: lista_de_identificadores ',' identificador { $$ = create_node($1, $3, 0, LISTA_IDENTIFICADOR);};
@@ -106,14 +150,14 @@ lista_de_identificadores: lista_de_identificadores ',' var_multidimensional { $$
 */
 
 declaracao_funcao: cabecalho corpo  { $$ = create_node($1, $2, 0, DEC_FUNC);};
-cabecalho: tipo identificador '(' lista_parametros ')' { $$ = create_node($1, $2, $4, CABECALHO);};
+cabecalho: tipo identificador '(' lista_parametros ')' { $$ = create_node($2, $4, 0, CABECALHO);};
 lista_parametros: parametros_entrada { $$ = $1;} | {  $$ = 0;};
 parametros_entrada: parametros_entrada ',' parametro  { $$ = create_node($1, $3, 0, PARAMETROS_ENTRADA);}; | parametro { $$ = $1 ;};
-parametro: tipo identificador  { $$ = create_node($1, $2, 0, PARAMETRO);};
+parametro: tipo identificador  { $$ = create_node($2, 0, 0, PARAMETRO);};
 
-corpo : bloco_comandos; //REVISAR
+corpo : bloco_comandos { $$ = $1; }; //REVISAR
 bloco_comandos : '{' lista_comandos '}'  { $$ = $2;} | '{' '}' {  $$ = 0;};
-lista_comandos: lista_comandos comando ';'  { $$ = create_node($1, $2, 0, LISTA_COMANDOS);} | comando ';'  { $$ = $1;};
+lista_comandos: lista_comandos comando ';'  { $$ = create_node($1, $2, 0, LISTA_COMANDOS); } | comando ';'  { $$ = $1;};
 
 /* -----------------------------------------------------------------------
 	
@@ -130,14 +174,14 @@ comando: declaracao_var_local { $$ = $1;}|
          controle_fluxo { $$ = $1;}| 
          controle_fluxo_while { $$ = $1;};
 
-literal: TK_LIT_INT | //REVISAR
-         TK_LIT_CHAR | 
-         TK_LIT_FALSE | 
-         TK_LIT_TRUE | 
-         TK_LIT_FLOAT;
+literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT); }| //REVISAR
+         TK_LIT_CHAR  { $$ = create_leaf($1, VAL_LIT_CHAR); }| 
+         TK_LIT_FALSE { $$ = create_leaf($1, VAL_LIT_BOOL); }| 
+         TK_LIT_TRUE  { $$ = create_leaf($1, VAL_LIT_BOOL); }| 
+         TK_LIT_FLOAT { $$ = create_leaf($1, VAL_LIT_FLOAT); };
 
-declaracao_var_local: tipo lista_de_identificadores_local { $$ = create_node($1, $2, 0, DEC_VAR_LOCAL); };
-inic_var_local: TK_OC_LE literal { $$ = $2; } | { $$ = 0; }; //REVISAR
+declaracao_var_local: tipo lista_de_identificadores_local { $$ = create_node($2, 0, 0, DEC_VAR_LOCAL); };
+inic_var_local: TK_OC_LE literal { $$ = create_node($2, 0, 0, INIC_VAR); } | { $$ = 0; }; 
 
 identificador_local: identificador inic_var_local { $$ = create_node($1, $2, 0, IDENT_LOCAL);} ;
 lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local { $$ = create_node($1, $3, 0, LISTA_IDENT_LOCAL); } | identificador_local { $$ = $1; };
@@ -153,7 +197,7 @@ controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN bloco_comandos  { $$ = cre
 
 controle_fluxo_while: TK_PR_WHILE '(' expressao ')' bloco_comandos { $$ = create_node($3, $5, 0, WHILE);} ;
 
-retorno: TK_PR_RETURN expressao { $$ = create_node( $1, 0, 0, RETURN);} ;
+retorno: TK_PR_RETURN expressao { $$ = create_node( $2, 0, 0, RETURN);} ;
 
 chamada_funcao: identificador '(' lista_argumentos ')' { $$ = create_node( $1, $3, 0, CHAMADA_FUNC);} ;
 
@@ -200,3 +244,4 @@ void yyerror(char const *s){
 	printf("%s na linha: %d\n", s,get_line_number());
 	
 }
+

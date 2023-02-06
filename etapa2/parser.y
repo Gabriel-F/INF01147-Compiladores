@@ -64,15 +64,18 @@ lista_de_elementos: declaracao_var_global;
 
 tipo: TK_PR_INT | TK_PR_FLOAT | TK_PR_BOOL | TK_PR_CHAR;
 
-lista_dimensional: TK_LIT_INT;
-lista_dimensional: lista_dimensional '^' TK_LIT_INT;
+identificador: TK_IDENTIFICADOR;
+lista_dimensional_inteiro: TK_LIT_INT;
 
-var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']';
+lista_dimensional: lista_dimensional_inteiro;
+lista_dimensional: lista_dimensional '^' lista_dimensional_inteiro;
+
+var_multidimensional: identificador '[' lista_dimensional ']';
 
 declaracao_var_global: tipo lista_de_identificadores ';';
-lista_de_identificadores: TK_IDENTIFICADOR;
+lista_de_identificadores: identificador;
 lista_de_identificadores: var_multidimensional;
-lista_de_identificadores: lista_de_identificadores ',' TK_IDENTIFICADOR;
+lista_de_identificadores: lista_de_identificadores ',' identificador;
 lista_de_identificadores: lista_de_identificadores ',' var_multidimensional;
 
 /* -----------------------------------------------------------------------
@@ -83,10 +86,10 @@ lista_de_identificadores: lista_de_identificadores ',' var_multidimensional;
 */
 
 declaracao_funcao: cabecalho corpo;
-cabecalho: tipo TK_IDENTIFICADOR '(' lista_parametros ')';
+cabecalho: tipo identificador '(' lista_parametros ')';
 lista_parametros: parametros_entrada | ;
 parametros_entrada: parametros_entrada ',' parametro | parametro;
-parametro: tipo TK_IDENTIFICADOR;
+parametro: tipo identificador;
 
 corpo : bloco_comandos;
 bloco_comandos : '{' lista_comandos '}' | '{' '}';
@@ -107,7 +110,7 @@ declaracao_var_local: tipo lista_de_identificadores_local;
 
 inic_var_local: TK_OC_LE literal | ; //Possível conflito com expressões ATENÇÃO
 
-identificador_local: TK_IDENTIFICADOR inic_var_local ;
+identificador_local: identificador inic_var_local ;
 
 lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local | identificador_local ;
 
@@ -123,7 +126,7 @@ controle_fluxo_while: TK_PR_WHILE '(' expressao ')' bloco_comandos;
 
 retorno: TK_PR_RETURN expressao;
 
-chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')';
+chamada_funcao: identificador '(' lista_argumentos ')';
 
 
 /* -----------------------------------------------------------------------
@@ -139,7 +142,7 @@ lista_operando: lista_operando op_binario operando | operando | lista_operando o
 
 operando: literal | chamada_funcao | identificador_expressao;
 
-identificador_expressao: TK_IDENTIFICADOR | TK_IDENTIFICADOR '[' lista_expressoes ']';
+identificador_expressao: identificador | identificador '[' lista_expressoes ']';
 
 lista_expressoes: lista_expressoes '^' expressao | expressao;
 
@@ -161,7 +164,7 @@ L: '(' E ')'| operando;
 
 operando: literal | chamada_funcao | identificador_expressao;
 
-identificador_expressao: TK_IDENTIFICADOR | TK_IDENTIFICADOR '[' lista_expressoes ']';
+identificador_expressao: identificador | identificador '[' lista_expressoes ']';
 
 lista_expressoes: lista_expressoes '^' expressao | expressao;
 
