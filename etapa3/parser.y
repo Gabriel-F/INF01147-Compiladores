@@ -112,7 +112,7 @@ extern int get_line_number();
 programa: lista_de_elementos { arvore = $$; }; // REVISAR
 programa: { $$ = 0; };
 
-lista_de_elementos: lista_de_elementos declaracao_funcao { $$ = $2; add_child(&$$, &$1); };
+lista_de_elementos: lista_de_elementos declaracao_funcao { if($1 == 0){ $$ = $2;} else {$$ = $1; add_child(&$$, &$2);} };
 lista_de_elementos: lista_de_elementos declaracao_var_global { $$ = $1; };
 lista_de_elementos: declaracao_funcao { $$ = $1; };
 lista_de_elementos: declaracao_var_global { $$ = 0; }; //Nao vai na AST //REVISAR
@@ -162,7 +162,7 @@ parametro: tipo identificador { $$ = 0; };
 
 corpo : bloco_comandos { $$ = $1; }; 
 bloco_comandos : '{' lista_comandos '}'  { $$ = $2; } | '{' '}' {  $$ = 0; };
-lista_comandos: lista_comandos comando ';'  { $$ = $2; add_child(&$$,&$1); } | comando ';'  { $$ = $1; };
+lista_comandos: lista_comandos comando ';'  { if($1 == 0){ $$ = $2;} else {$$ = $1; add_child(&$$, &$2);} } | comando ';'  { $$ = $1; };
 
 
 //FOLHA : LITERAIS, IDENTIFICADORES
@@ -249,7 +249,7 @@ operando: literal { $$ = $1; } | chamada_funcao { $$ = $1; } | identificador_exp
 
 identificador_expressao: TK_IDENTIFICADOR { $$ = create_leaf($1, IDENTIFICADOR); } | TK_IDENTIFICADOR '[' lista_expressoes ']' { $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR);  add_child(&$$,&identLeaf); add_child(&$$,&$3); } ; //REVISAR - Passando o primeiro '[' , constroi o [] no ast.c
 
-lista_expressoes: lista_expressoes '^' expressao { $$ = $3; add_child(& $$, & $1); } | expressao { $$ = $1; };
+lista_expressoes: lista_expressoes '^' expressao { if($1 == 0){ $$ = $3;} else {$$ = $1; add_child(&$$, &$3);} } | expressao { $$ = $1; };
 
 %%
 
