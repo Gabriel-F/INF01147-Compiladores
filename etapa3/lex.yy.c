@@ -879,7 +879,7 @@ YY_RULE_SETUP
 case 10:
 YY_RULE_SETUP
 #line 40 "scanner.l"
-{yylval.valor_lexico = create_value(VAL_PR,yytext,yylineno);return TK_PR_INT;}
+{yylval.valor_lexico = create_value(VAL_PR,yytext,yylineno); return TK_PR_INT;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP

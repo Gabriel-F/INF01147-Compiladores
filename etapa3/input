@@ -1,4 +1,8 @@
+int a; //Deve ser ignorado
+
 int main(){
 	
 	int a <= 2;
+	b = 3;
 }
+

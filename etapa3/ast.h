@@ -80,13 +80,22 @@ typedef struct valor_t{
     union TypeData tokenValue;
 }VALOR_T;
 
+struct astNode;
+
+typedef struct astChildren{
+    struct astNode * child;
+    struct astChildren * nextChild;
+} ASTCHILDREN;
+
 typedef struct astNode{
     int type;
     VALOR_T * value;
-    struct astNode * child[NUM_CHILDREN];
+    struct astChildren * children;
 } ASTNODE;
 
-ASTNODE * create_node(ASTNODE * child1, ASTNODE * child2, ASTNODE * child3, int type);
+void add_child(ASTNODE ** root, ASTNODE ** child);
+
+ASTNODE * create_node(VALOR_T * value, int type);
 
 ASTNODE * create_leaf(VALOR_T * value , int type);
 
@@ -94,6 +103,6 @@ VALOR_T * create_value(int type, char * text, int lineNumber);
 
 void printLabels(void * node);
 
-void printAst(void * node);
+void printAst(ASTNODE * node);
 
 #endif
