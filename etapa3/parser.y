@@ -6,11 +6,6 @@
 #include "ast.h"
 
 extern void *arvore;
-//extern void exporta (void *arvore);
-//extern void libera (void *arvore);
-
-//#define YYERROR_VERBOSE 1
-//#define parse.error verbose
 
 int yylex(void);
 void yyerror (char const *s);
@@ -26,7 +21,6 @@ extern int get_line_number();
 %type<no> programa;
 %type<no> lista_de_elementos;
 %type<no> tipo;
-%type<no> declaracao_var_global;
 %type<no> declaracao_funcao;
 %type<no> lista_parametros;
 %type<no> parametros_entrada;
@@ -36,6 +30,7 @@ extern int get_line_number();
 %type<no> lista_comandos;
 %type<no> declaracao_var_local;
 %type<no> identificador_local;
+%type<no> declaracao_var_global;
 %type<no> lista_de_identificadores_local;
 %type<no> atribuicao;
 %type<no> corpo;
@@ -97,8 +92,12 @@ extern int get_line_number();
 %token <valor_lexico> '%'
 %token <valor_lexico> '!'
 %token <valor_lexico> '['
+%token <valor_lexico> ']'
+%token <valor_lexico> '^'
 %type <valor_lexico> cabecalho;
 %token TK_ERRO
+
+
 
 %%
 
@@ -109,13 +108,13 @@ extern int get_line_number();
 -------------------------------------------------------------------------
 */
 
-programa: lista_de_elementos { arvore = $$; }; // REVISAR
+programa: lista_de_elementos { arvore = $$;  }; // REVISAR
 programa: { $$ = 0; };
 
 lista_de_elementos: lista_de_elementos declaracao_funcao { if($1 == 0){ $$ = $2;} else {$$ = $1; add_child(&$$, &$2);} };
 lista_de_elementos: lista_de_elementos declaracao_var_global { $$ = $1; };
 lista_de_elementos: declaracao_funcao { $$ = $1; };
-lista_de_elementos: declaracao_var_global { $$ = 0; }; //Nao vai na AST //REVISAR
+lista_de_elementos: declaracao_var_global { }; //Nao vai na AST //REVISAR
 
 /* -----------------------------------------------------------------------
 	
@@ -138,12 +137,12 @@ identificador : TK_IDENTIFICADOR { $$ = create_leaf($1,IDENTIFICADOR); }; //REVI
 lista_dimensional_inteiro: TK_LIT_INT;
 lista_dimensional: lista_dimensional_inteiro ;
 lista_dimensional: lista_dimensional '^' lista_dimensional_inteiro ;
-var_multidimensional: identificador '[' lista_dimensional ']' ;
+var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']' { deleteValue($1); };
 
-declaracao_var_global: tipo lista_de_identificadores ';' ;//{ $$ = $2; };//{ $$ = create_node($2, 0, 0, DEC_VAR_GLOBAL);};
-lista_de_identificadores: identificador;
+declaracao_var_global: tipo lista_de_identificadores ';' { $$ = 0;};//{ $$ = $2; };//{ $$ = create_node($2, 0, 0, DEC_VAR_GLOBAL);};
+lista_de_identificadores: TK_IDENTIFICADOR { deleteValue($1); };
 lista_de_identificadores: var_multidimensional;
-lista_de_identificadores: lista_de_identificadores ',' identificador;
+lista_de_identificadores: lista_de_identificadores ',' TK_IDENTIFICADOR ;
 lista_de_identificadores: lista_de_identificadores ',' var_multidimensional;
 
 /* -----------------------------------------------------------------------
@@ -158,7 +157,7 @@ declaracao_funcao: cabecalho corpo  { $$ = create_node($1, IDENTIFICADOR); add_c
 cabecalho: tipo TK_IDENTIFICADOR '(' lista_parametros ')' { $$ = $2; };
 lista_parametros: parametros_entrada { $$ = 0; } | { $$ = 0;};
 parametros_entrada: parametros_entrada ',' parametro { $$ = 0; } | parametro { $$ = 0; };
-parametro: tipo identificador { $$ = 0; };
+parametro: tipo TK_IDENTIFICADOR { $$ = 0; deleteValue($2);};
 
 corpo : bloco_comandos { $$ = $1; }; 
 bloco_comandos : '{' lista_comandos '}'  { $$ = $2; } | '{' '}' {  $$ = 0; };
@@ -196,14 +195,14 @@ literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT); }| //REVISAR
 
 declaracao_var_local: tipo lista_de_identificadores_local { $$ = $2; };
 
-identificador_local: identificador { $$ = 0; } | identificador TK_OC_LE literal { $$ = create_node($2, INIC_VAR); add_child(&$$,&$1); add_child(&$$,&$3); };
+identificador_local: TK_IDENTIFICADOR { $$=0; deleteValue($1); } | identificador TK_OC_LE literal { $$ = create_node($2, INIC_VAR); add_child(&$$,&$1); add_child(&$$,&$3); };
 
-lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local { $$ = $3; add_child(&$$, &$1); } | identificador_local { $$ = $1; };
+lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local { if($3 != 0){$$ = $3; add_child(&$$, &$1);} } | identificador_local { $$ = $1; };
 
 atribuicao: identificador_expressao '=' expressao { $$ = create_node($2, ATRIBUICAO); add_child(&$$, &$1); add_child(&$$,&$3); } ;
 
 lista_argumentos: argumentos_entrada { $$ = $1; } | { $$ = 0; };
-argumentos_entrada: argumentos_entrada ',' argumento { $$ = $3; add_child(&$$, &$3); } | argumento { $$ = $1; };
+argumentos_entrada: argumentos_entrada ',' argumento { $$ = $1; add_child(&$$, &$3); } | argumento { $$ = $1; };
 argumento: expressao { $$ = $1; };
 
 controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN bloco_comandos  { $$ = create_node($1, IF); add_child(&$$,&$6); } | 
@@ -247,11 +246,16 @@ L: '(' E ')' { $$ = $2; } | operando { $$ = $1; };
 
 operando: literal { $$ = $1; } | chamada_funcao { $$ = $1; } | identificador_expressao { $$ = $1; };
 
-identificador_expressao: TK_IDENTIFICADOR { $$ = create_leaf($1, IDENTIFICADOR); } | TK_IDENTIFICADOR '[' lista_expressoes ']' { $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR);  add_child(&$$,&identLeaf); add_child(&$$,&$3); } ; //REVISAR - Passando o primeiro '[' , constroi o [] no ast.c
+identificador_expressao: TK_IDENTIFICADOR { $$ = create_leaf($1, IDENTIFICADOR); } | TK_IDENTIFICADOR '[' lista_expressoes ']' 
+{ $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR);  add_child(&$$,&identLeaf); add_child(&$$,&$3); deleteValue($4); } ; //REVISAR - Passando o primeiro '[' , constroi o [] no ast.c
 
-lista_expressoes: lista_expressoes '^' expressao { if($1 == 0){ $$ = $3;} else {$$ = $1; add_child(&$$, &$3);} } | expressao { $$ = $1; };
+
+
+//lista_de_elementos: lista_de_elementos declaracao_funcao { if($1 == 0){ $$ = $2;} else {$$ = $1; add_child(&$$, &$2);} };
+lista_expressoes: lista_expressoes '^' expressao { $$=create_node($2,LISTA_EXP); add_child(&$$,&$1); add_child(&$$, &$3); } | expressao { $$ = $1; };
 
 %%
+
 
 void yyerror(char const *s){
 	printf("%s na linha: %d\n", s,get_line_number());

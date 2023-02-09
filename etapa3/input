@@ -1,8 +1,10 @@
-int a; //Deve ser ignorado
-
-int main(){
-	
-	int a <= 2;
-	b = 3;
+int minhafuncao(){
+    minhavar = 'c';
+    a = 2;
 }
 
+int main(){
+
+    int c <= 'c';
+    asdasd = false || true && !a;
+}

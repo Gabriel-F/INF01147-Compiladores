@@ -65,6 +65,8 @@
 #define VAL_SPEC 8
 
 
+
+
 //void exporta(void *);
 union TypeData{
     int valInt;
@@ -78,7 +80,9 @@ typedef struct valor_t{
     int lineNumber;
     int type;
     union TypeData tokenValue;
+    char * input;
 }VALOR_T;
+
 
 struct astNode;
 
@@ -92,6 +96,8 @@ typedef struct astNode{
     VALOR_T * value;
     struct astChildren * children;
 } ASTNODE;
+
+void deleteValue(VALOR_T * value);
 
 void add_child(ASTNODE ** root, ASTNODE ** child);
 

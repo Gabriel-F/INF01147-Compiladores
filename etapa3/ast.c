@@ -1,5 +1,6 @@
 #include "ast.h"
 
+
 void add_child(ASTNODE ** root, ASTNODE ** child){
 
     if(*root == NULL || *child == NULL){ //não é válido
@@ -11,6 +12,7 @@ void add_child(ASTNODE ** root, ASTNODE ** child){
     newChild->nextChild = NULL;
     ASTCHILDREN * p = (*root)->children;
     if(p->child == NULL){
+        free((*root)->children);
         (*root)->children = newChild;
     }else{
         while(p->child != NULL && p->nextChild != NULL){
@@ -21,36 +23,50 @@ void add_child(ASTNODE ** root, ASTNODE ** child){
     }
 }
 
-ASTNODE * create_node(VALOR_T * value , int type){
+void deleteValue(VALOR_T * value){
+  
+        free(value->tokenValue.valString);
+        free(value);
+        
+}
 
+ASTNODE * create_node(VALOR_T * value , int type){
+    
     ASTNODE * node = (ASTNODE*)malloc(sizeof(ASTNODE));
     ASTCHILDREN * newChild = (ASTCHILDREN*)malloc(sizeof(ASTCHILDREN));
+
+    newChild->child = NULL;
+    newChild->nextChild = NULL;
     node->type = type;
     node->value = value;
     node->children = newChild;
-    newChild->child = NULL;
-    newChild->nextChild = NULL;
+
+
+    
     return node;
 }
 
 ASTNODE * create_leaf(VALOR_T * value , int type){
     ASTNODE * node = (ASTNODE*)malloc(sizeof(ASTNODE));
     ASTCHILDREN * newChild = (ASTCHILDREN*)malloc(sizeof(ASTCHILDREN));
+
+    newChild->child = NULL;
+    newChild->nextChild = NULL;
     node->type = type;
     node->value = value;
     node->children = newChild;
-    newChild->child = NULL;
-    newChild->nextChild = NULL;
+    
     return node;
 }
 
 VALOR_T * create_value(int type, char * text, int lineNumber){
     VALOR_T * value = (VALOR_T*)malloc(sizeof(VALOR_T));
     value->lineNumber = lineNumber;
+    value->input = text;
     if(type == VAL_IDENTIFICADOR || type == VAL_PR || type == VAL_OP_COMP || type == VAL_SPEC)
-        value->tokenValue.valString = strdup(text);
+        value->tokenValue.valString = value->input;
     else if(type == VAL_LIT_INT){
-        value->tokenValue.valInt = atoi(strdup(text));
+        value->tokenValue.valInt = atoi(value->input);
     }else if(type == VAL_LIT_BOOL){
         if(strcmp(text,"true") == 0){
             value->tokenValue.valBool = true;
@@ -58,9 +74,9 @@ VALOR_T * create_value(int type, char * text, int lineNumber){
             value->tokenValue.valBool = false;
         }
     }else if(type == VAL_LIT_FLOAT){
-        value->tokenValue.valFloat = atof(strdup(text));
+        value->tokenValue.valFloat = atof(value->input);
     }else if(type == VAL_LIT_CHAR){
-        value->tokenValue.valChar = strdup(text)[1];
+        value->tokenValue.valChar = value->input[1];
     }
     value->type = type;
 
@@ -74,13 +90,51 @@ void exporta(void * node){
     printLabels(node);
     
 }
-
+void liberaChildren(ASTCHILDREN * children){
+    if(children == NULL)
+        return;
+    if(children->nextChild != NULL)
+        liberaChildren(children->nextChild);
+    
+    //free(children->nextChild);
+    free(children);
+    
+    children = NULL;
+}
 void libera(void *node){
 
     //Percorre dfs
     //Depois Free
-}
+    if(node == 0){
+        return;
+    }
+    if(node == NULL){
 
+        return;
+    }
+    ASTNODE * root = ((ASTNODE*)(node));
+    //DFS on children
+    
+    ASTCHILDREN * p = root->children;
+
+    while(p->child != NULL){
+
+        libera((void*)(p->child));
+        if(p->nextChild == NULL)
+            break;
+        p = p->nextChild;
+    }
+    
+    free(root->value->input); //ACHO QUE PRECISO DISSO
+    root->value->input = NULL;
+    free(root->value);
+    root->value = NULL;
+    liberaChildren((root->children));
+    free(root);
+    root = NULL;
+
+
+}
 void printAst(ASTNODE * node){
     if(node == 0){
         return;
@@ -92,15 +146,17 @@ void printAst(ASTNODE * node){
     //DFS on children
     
     ASTCHILDREN * p = root->children;
-    //Find first empty child
-    while(p->child != NULL){
-        printf("%p, %p\n",root,p->child);
-        printAst(p->child);
-        if(p->nextChild == NULL)
-            break;
-        p = p->nextChild;
-    }
+  
+        //Find first empty child
+        while(p->child != NULL){
+            printf("%p, %p\n",root,p->child);
+            printAst(p->child);
+            if(p->nextChild == NULL)
+                break;
+            p = p->nextChild;
+        }
     
+
     /*for(int i=0;i<NUM_CHILDREN;i++){
         printAst(((ASTNODE*)node)->child[i]);
     }*/
