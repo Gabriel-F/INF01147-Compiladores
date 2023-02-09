@@ -41,13 +41,13 @@ char [A-z]
 "float"   { return TK_PR_FLOAT;}
 "bool"    { return TK_PR_BOOL;}
 "char"    { return TK_PR_CHAR;}
-"if"      { return TK_PR_IF;}
+"if"      {yylval.valor_lexico = create_value(VAL_PR,strdup(yytext),yylineno); return TK_PR_IF;}
 "then"    { return TK_PR_THEN;}
 "else"    { return TK_PR_ELSE;}
-"while"   { return TK_PR_WHILE;}
+"while"   {yylval.valor_lexico = create_value(VAL_PR,strdup(yytext),yylineno); return TK_PR_WHILE;}
 "input"   { return TK_PR_INPUT;}
 "output"  { return TK_PR_OUTPUT;}
-"return"  { return TK_PR_RETURN;}
+"return"  {yylval.valor_lexico = create_value(VAL_PR,strdup(yytext),yylineno); return TK_PR_RETURN;}
 "for"     { return TK_PR_FOR;}
 
 "<="      {yylval.valor_lexico = create_value(VAL_OP_COMP,strdup(yytext),yylineno); return TK_OC_LE;}

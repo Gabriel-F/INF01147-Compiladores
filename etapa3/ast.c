@@ -205,7 +205,7 @@ void printLabels(void * node){
         printf("%p [label=\"%s\"]\n", ((ASTNODE*)node), "if");
         break;
     case IF_ELSE:
-        printf("%p [label=\"%s\"]\n", ((ASTNODE*)node), "if_else");
+        printf("%p [label=\"%s\"]\n", ((ASTNODE*)node), "if");
         break;
     case WHILE:
         printf("%p [label=\"%s\"]\n", ((ASTNODE*)node), "while");

@@ -909,7 +909,7 @@ YY_RULE_SETUP
 case 14:
 YY_RULE_SETUP
 #line 44 "scanner.l"
-{ return TK_PR_IF;}
+{yylval.valor_lexico = create_value(VAL_PR,strdup(yytext),yylineno); return TK_PR_IF;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
@@ -924,7 +924,7 @@ YY_RULE_SETUP
 case 17:
 YY_RULE_SETUP
 #line 47 "scanner.l"
-{ return TK_PR_WHILE;}
+{yylval.valor_lexico = create_value(VAL_PR,strdup(yytext),yylineno); return TK_PR_WHILE;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
@@ -939,7 +939,7 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 50 "scanner.l"
-{ return TK_PR_RETURN;}
+{yylval.valor_lexico = create_value(VAL_PR,strdup(yytext),yylineno); return TK_PR_RETURN;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP

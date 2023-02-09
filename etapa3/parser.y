@@ -142,7 +142,7 @@ var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']' { deleteValue($
 declaracao_var_global: tipo lista_de_identificadores ';' { $$ = 0;};//{ $$ = $2; };//{ $$ = create_node($2, 0, 0, DEC_VAR_GLOBAL);};
 lista_de_identificadores: TK_IDENTIFICADOR { deleteValue($1); };
 lista_de_identificadores: var_multidimensional;
-lista_de_identificadores: lista_de_identificadores ',' TK_IDENTIFICADOR ;
+lista_de_identificadores: lista_de_identificadores ',' TK_IDENTIFICADOR {deleteValue($3);};
 lista_de_identificadores: lista_de_identificadores ',' var_multidimensional;
 
 /* -----------------------------------------------------------------------
@@ -205,8 +205,8 @@ lista_argumentos: argumentos_entrada { $$ = $1; } | { $$ = 0; };
 argumentos_entrada: argumentos_entrada ',' argumento { $$ = $1; add_child(&$$, &$3); } | argumento { $$ = $1; };
 argumento: expressao { $$ = $1; };
 
-controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN bloco_comandos  { $$ = create_node($1, IF); add_child(&$$,&$6); } | 
-                TK_PR_IF '(' expressao ')' TK_PR_THEN bloco_comandos TK_PR_ELSE bloco_comandos { $$ = create_node($1, IF_ELSE); add_child(&$$,&$6); add_child(&$$,&$8); }; // REVISAR
+controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN bloco_comandos  { $$ = create_node($1, IF); add_child(&$$,&$3); add_child(&$$,&$6);  } | 
+                TK_PR_IF '(' expressao ')' TK_PR_THEN bloco_comandos TK_PR_ELSE bloco_comandos { $$ = create_node($1, IF_ELSE); add_child(&$$,&$3); add_child(&$$,&$6); add_child(&$$,&$8); }; // REVISAR
 
 controle_fluxo_while: TK_PR_WHILE '(' expressao ')' bloco_comandos { $$ = create_node($1, WHILE); add_child(&$$, &$3); add_child(&$$, &$5); } ;
 
