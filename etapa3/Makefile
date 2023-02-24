@@ -1,8 +1,8 @@
 etapa3: .FORCE
 	flex scanner.l
 	bison -d parser.y
-	gcc -c -std=c99 lex.yy.c parser.tab.c ast.c
-	gcc -c -std=c99 main.c	
+	gcc -c lex.yy.c parser.tab.c ast.c
+	gcc -c main.c	
 	gcc -o etapa3 lex.yy.o parser.tab.o main.o ast.o
 
 etapa1MAC: .FORCE
