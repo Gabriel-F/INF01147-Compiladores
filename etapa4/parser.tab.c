@@ -1883,7 +1883,7 @@ yyreduce:
 
   case 63: /* chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')'  */
 #line 228 "parser.y"
-                                                          { (yyval.no) = create_node((yyvsp[-3].valor_lexico), CHAMADA_FUNC); add_child(&(yyval.no), &(yyvsp[-1].no)); }
+                                                          {if(!isDecl(stack,*(yyvsp[-3].valor_lexico))) { printErrorUndecl(*(yyvsp[-3].valor_lexico)); } (yyval.no) = create_node((yyvsp[-3].valor_lexico), CHAMADA_FUNC); add_child(&(yyval.no), &(yyvsp[-1].no)); }
 #line 1888 "parser.tab.c"
     break;
 
@@ -2075,7 +2075,7 @@ yyreduce:
 
   case 95: /* identificador_expressao: TK_IDENTIFICADOR  */
 #line 262 "parser.y"
-                                          { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), IDENTIFICADOR); }
+                                          { if(!isDecl(stack,*(yyvsp[0].valor_lexico))) { printErrorUndecl(*(yyvsp[0].valor_lexico)); } (yyval.no) = create_leaf((yyvsp[0].valor_lexico), IDENTIFICADOR); }
 #line 2080 "parser.tab.c"
     break;
 

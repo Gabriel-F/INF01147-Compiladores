@@ -53,3 +53,5 @@ void addItem(STACK *st, TNODE * value); // Insert new symbol in hash table
 bool isDecl(STACK *st, VALOR_T identifier);
 
 void printErrorDecl(VALOR_T var, TNODE * varDeclared);
+
+void printErrorUndecl(VALOR_T var);

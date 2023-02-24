@@ -1,16 +1,23 @@
 int a;
 int b;
-int a;
+int a;//Erro
 int main(){
 	int a;
-	int a;
+	int a; //Erro
+	
+	b = 2+2; //Erro
 }
 
 int foo(int a){
-
+	a = 2+2;//Correto
+	c = a; //Erro
 }
 
 
-int foo(int b){
+int foo(int b){ //Erro
 
+	boo();//Erro
 }
+
+
+

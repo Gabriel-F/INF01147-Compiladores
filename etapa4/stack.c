@@ -108,3 +108,7 @@ bool isDecl(STACK *st, VALOR_T identifier){
 void printErrorDecl(VALOR_T var, TNODE * varDeclared){
     printf("ERR_DECLARED: %s (linha: %d) ja declarada na linha: %d\n", var.input, var.lineNumber,varDeclared->line);
 }
+
+void printErrorUndecl(VALOR_T var){
+    printf("ERR_UNDECLARED: %s (linha: %d) não declarada \n", var.input,var.lineNumber);
+}

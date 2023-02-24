@@ -225,7 +225,7 @@ controle_fluxo_while: TK_PR_WHILE '(' expressao ')' bloco_comandos { $$ = create
 
 retorno: TK_PR_RETURN expressao { $$ = create_node( $1, RETURN); add_child(&$$,&$2); } ;
 
-chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')' { $$ = create_node($1, CHAMADA_FUNC); add_child(&$$, &$3); } ;
+chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')' {if(!isDecl(stack,*$1)) { printErrorUndecl(*$1); } $$ = create_node($1, CHAMADA_FUNC); add_child(&$$, &$3); } ;
 
 /* -----------------------------------------------------------------------
 	
@@ -259,7 +259,7 @@ L: '(' E ')' { $$ = $2; } | operando { $$ = $1; };
 
 operando: literal { $$ = $1; } | chamada_funcao { $$ = $1; } | identificador_expressao { $$ = $1; };
 
-identificador_expressao: TK_IDENTIFICADOR { $$ = create_leaf($1, IDENTIFICADOR); } | TK_IDENTIFICADOR '[' lista_expressoes ']' 
+identificador_expressao: TK_IDENTIFICADOR { if(!isDecl(stack,*$1)) { printErrorUndecl(*$1); } $$ = create_leaf($1, IDENTIFICADOR); } | TK_IDENTIFICADOR '[' lista_expressoes ']' 
 { $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR);  add_child(&$$,&identLeaf); add_child(&$$,&$3); deleteValue($4); } ; //REVISAR - Passando o primeiro '[' , constroi o [] no ast.c
 
 
