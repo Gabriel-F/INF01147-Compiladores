@@ -1,0 +1,12 @@
+
+int main(){
+
+	int a, b <= 2;
+
+	char c <= 'c';
+
+	bool c <= false;
+
+	bool a,b,c,d,d,d,d<=true,d,d,d,d,d;
+
+}
