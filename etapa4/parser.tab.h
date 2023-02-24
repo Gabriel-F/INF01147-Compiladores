@@ -87,7 +87,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 16 "parser.y"
+#line 23 "parser.y"
 
 	ASTNODE *no;
 	VALOR_T *valor_lexico;

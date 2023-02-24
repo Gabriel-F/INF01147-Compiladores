@@ -1,15 +1,22 @@
+//DUAS PERGUNTAS SEM RESPOSTAS CONCRETAS: O QUE É A VIDA? - ABUJAMRA. E POR QUE A GENTE FEZ ISSO EM C?  
+
 %define parse.error verbose
 %{
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "ast.h"
+#include "stack.h"
 
 extern void *arvore;
 
 int yylex(void);
 void yyerror (char const *s);
 extern int get_line_number();
+
+
+extern void *stack;
+int currType = 0;
 
 %}
 
@@ -56,6 +63,7 @@ extern int get_line_number();
 %type<no> identificador_expressao;
 %type<no> lista_expressoes;
 %type<no> identificador;
+%type<no> push_stack;
 
 
 %token <valor_lexico>TK_PR_INT
@@ -95,7 +103,7 @@ extern int get_line_number();
 %token <valor_lexico> ']'
 %token <valor_lexico> '^'
 %type <valor_lexico> cabecalho;
-%token TK_ERRO
+%token TK_ERRO;
 
 
 
@@ -108,7 +116,9 @@ extern int get_line_number();
 -------------------------------------------------------------------------
 */
 
-programa: lista_de_elementos { arvore = $$;  }; // REVISAR
+
+
+programa: lista_de_elementos { arvore = $$;  pop(stack); }; // REVISAR
 programa: { $$ = 0; };
 
 lista_de_elementos: lista_de_elementos declaracao_funcao { if($1 == 0){ $$ = $2;} else {$$ = $1; add_child(&$$, &$2);} };
@@ -127,22 +137,22 @@ lista_de_elementos: declaracao_var_global { }; //Nao vai na AST //REVISAR
 // create_leaf(valor, nome_da_folha)
 
 
-tipo: TK_PR_INT   { $$ = 0; }|  //REVISAR PERGUNTAR PARA O SOR
-      TK_PR_FLOAT { $$ = 0; }| 
-      TK_PR_BOOL  { $$ = 0; }| 
-      TK_PR_CHAR  { $$ = 0; };
+tipo: TK_PR_INT   { $$ = 0; currType = INT_TYPE;}|  //APARENTEMENTE UMA GAMBIARRA
+      TK_PR_FLOAT { $$ = 0; currType = FLOAT_TYPE;}| 
+      TK_PR_BOOL  { $$ = 0; currType = BOOL_TYPE;}| 
+      TK_PR_CHAR  { $$ = 0; currType = CHAR_TYPE;};
 
 identificador : TK_IDENTIFICADOR { $$ = create_leaf($1,IDENTIFICADOR); }; //REVISAR  FOLHA - VALUE
 
 lista_dimensional_inteiro: TK_LIT_INT;
 lista_dimensional: lista_dimensional_inteiro ;
 lista_dimensional: lista_dimensional '^' lista_dimensional_inteiro ;
-var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']' { deleteValue($1); };
+var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']' { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input));} addItem(stack, createItem(ARRAY,currType,*$1)); deleteValue($1); };
 
 declaracao_var_global: tipo lista_de_identificadores ';' { $$ = 0;};//{ $$ = $2; };//{ $$ = create_node($2, 0, 0, DEC_VAR_GLOBAL);};
-lista_de_identificadores: TK_IDENTIFICADOR { deleteValue($1); };
+lista_de_identificadores: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input));} addItem(stack, createItem(VARIABLE,currType,*$1)); deleteValue($1); };
 lista_de_identificadores: var_multidimensional;
-lista_de_identificadores: lista_de_identificadores ',' TK_IDENTIFICADOR {deleteValue($3);};
+lista_de_identificadores: lista_de_identificadores ',' TK_IDENTIFICADOR { if(isDecl(stack,*$3)) { printErrorDecl(*$3,find(stack,$3->input));} addItem(stack, createItem(VARIABLE,currType,*$3)); deleteValue($3);};
 lista_de_identificadores: lista_de_identificadores ',' var_multidimensional;
 
 /* -----------------------------------------------------------------------
@@ -154,12 +164,13 @@ lista_de_identificadores: lista_de_identificadores ',' var_multidimensional;
 
 //AST:  id -> ( nome , primeiro comando )
 declaracao_funcao: cabecalho corpo  { $$ = create_node($1, IDENTIFICADOR); add_child(&$$, &$2); };
-cabecalho: tipo TK_IDENTIFICADOR '(' lista_parametros ')' { $$ = $2; };
+cabecalho: tipo TK_IDENTIFICADOR { if(isDecl(stack,*$2)) { printErrorDecl(*$2,find(stack,$2->input));} addItem(stack, createItem(FUNCTION,currType,*$2)); push(stack); }'(' lista_parametros ')' { $$ = $2; };
 lista_parametros: parametros_entrada { $$ = 0; } | { $$ = 0;};
 parametros_entrada: parametros_entrada ',' parametro { $$ = 0; } | parametro { $$ = 0; };
-parametro: tipo TK_IDENTIFICADOR { $$ = 0; deleteValue($2);};
+parametro: tipo TK_IDENTIFICADOR { if(isDecl(stack,*$2)) { printErrorDecl(*$2,find(stack,$2->input));} addItem(stack, createItem(FUNCTION,currType,*$2)); $$ = 0; deleteValue($2);};
 
-corpo : bloco_comandos { $$ = $1; }; 
+corpo : bloco_comandos { $$ = $1; pop(stack); };
+
 bloco_comandos : '{' lista_comandos '}'  { $$ = $2; } | '{' '}' {  $$ = 0; };
 lista_comandos: lista_comandos comando ';'  { if($1 == 0){ $$ = $2;} else {$$ = $1; add_child(&$$, &$2);} } | comando ';'  { $$ = $1; };
 
@@ -176,26 +187,28 @@ lista_comandos: lista_comandos comando ';'  { if($1 == 0){ $$ = $2;} else {$$ = 
 -------------------------------------------------------------------------
 */
 
+push_stack: { push(stack); };
+
 comando: declaracao_var_local { $$ = $1;}| 
          atribuicao { $$ = $1;}| 
          retorno { $$ = $1;}| 
-         bloco_comandos { $$ = $1;}| 
+         push_stack bloco_comandos { $$ = $1;}| 
          chamada_funcao { $$ = $1;}| 
          controle_fluxo { $$ = $1;}| 
          controle_fluxo_while { $$ = $1;};
 
-literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT); }| //REVISAR
-         TK_LIT_CHAR  { $$ = create_leaf($1, VAL_LIT_CHAR); }| 
-         TK_LIT_FALSE { $$ = create_leaf($1, VAL_LIT_BOOL); }| 
-         TK_LIT_TRUE  { $$ = create_leaf($1, VAL_LIT_BOOL); }| 
-         TK_LIT_FLOAT { $$ = create_leaf($1, VAL_LIT_FLOAT); };
+literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT); addItem(stack, createItem(LITERAL,INT_TYPE,*$1)); }| //REVISAR
+         TK_LIT_CHAR  { $$ = create_leaf($1, VAL_LIT_CHAR); addItem(stack, createItem(LITERAL,CHAR_TYPE,*$1));}| 
+         TK_LIT_FALSE { $$ = create_leaf($1, VAL_LIT_BOOL); addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));}| 
+         TK_LIT_TRUE  { $$ = create_leaf($1, VAL_LIT_BOOL); addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));}| 
+         TK_LIT_FLOAT { $$ = create_leaf($1, VAL_LIT_FLOAT); addItem(stack, createItem(LITERAL,FLOAT_TYPE,*$1));};
 
 
 // int a, b <= 2, c, d <= 3;
 
 declaracao_var_local: tipo lista_de_identificadores_local { $$ = $2; };
 
-identificador_local: TK_IDENTIFICADOR { $$=0; deleteValue($1); } | identificador TK_OC_LE literal { $$ = create_node($2, INIC_VAR); add_child(&$$,&$1); add_child(&$$,&$3); };
+identificador_local: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); } addItem(stack, createItem(VARIABLE,currType,*$1)); $$=0; deleteValue($1); } | identificador TK_OC_LE literal { $$ = create_node($2, INIC_VAR); add_child(&$$,&$1); add_child(&$$,&$3); };
 
 lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local { if($3 != 0){$$ = $3; add_child(&$$, &$1);} } | identificador_local { $$ = $1; };
 
