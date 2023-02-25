@@ -142,7 +142,7 @@ tipo: TK_PR_INT   { $$ = 0; currType = INT_TYPE;}|  //APARENTEMENTE UMA GAMBIARR
       TK_PR_BOOL  { $$ = 0; currType = BOOL_TYPE;}| 
       TK_PR_CHAR  { $$ = 0; currType = CHAR_TYPE;};
 
-identificador : TK_IDENTIFICADOR {if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*$1)); $$ = create_leaf($1,IDENTIFICADOR); }; //REVISAR  FOLHA - VALUE
+identificador : TK_IDENTIFICADOR {if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*$1)); $$ = create_leaf($1,IDENTIFICADOR, currType); }; //REVISAR  FOLHA - VALUE
 
 lista_dimensional_inteiro: TK_LIT_INT;
 lista_dimensional: lista_dimensional_inteiro ;
@@ -197,22 +197,22 @@ comando: declaracao_var_local { $$ = $1;}|
          controle_fluxo { $$ = $1;}| 
          controle_fluxo_while { $$ = $1;};
 
-literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT); addItem(stack, createItem(LITERAL,INT_TYPE,*$1)); }| //REVISAR
-         TK_LIT_CHAR  { $$ = create_leaf($1, VAL_LIT_CHAR); addItem(stack, createItem(LITERAL,CHAR_TYPE,*$1));}| 
-         TK_LIT_FALSE { $$ = create_leaf($1, VAL_LIT_BOOL); addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));}| 
-         TK_LIT_TRUE  { $$ = create_leaf($1, VAL_LIT_BOOL); addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));}| 
-         TK_LIT_FLOAT { $$ = create_leaf($1, VAL_LIT_FLOAT); addItem(stack, createItem(LITERAL,FLOAT_TYPE,*$1));};
+literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT, INT_TYPE); addItem(stack, createItem(LITERAL,INT_TYPE,*$1)); }| //REVISAR
+         TK_LIT_CHAR  { $$ = create_leaf($1, VAL_LIT_CHAR, CHAR_TYPE); addItem(stack, createItem(LITERAL,CHAR_TYPE,*$1));}| 
+         TK_LIT_FALSE { $$ = create_leaf($1, VAL_LIT_BOOL, BOOL_TYPE); addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));}| 
+         TK_LIT_TRUE  { $$ = create_leaf($1, VAL_LIT_BOOL, BOOL_TYPE); addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));}| 
+         TK_LIT_FLOAT { $$ = create_leaf($1, VAL_LIT_FLOAT, FLOAT_TYPE); addItem(stack, createItem(LITERAL,FLOAT_TYPE,*$1));};
 
 
 // int a, b <= 2, c, d <= 3;
 
 declaracao_var_local: tipo lista_de_identificadores_local { $$ = $2; };
 
-identificador_local: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*$1)); $$=0; deleteValue($1); } | identificador TK_OC_LE literal { $$ = create_node($2, INIC_VAR); add_child(&$$,&$1); add_child(&$$,&$3); };
+identificador_local: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*$1)); $$=0; deleteValue($1); } | identificador TK_OC_LE literal { $$ = create_node($2, INIC_VAR); add_child(&$$,&$1); add_child(&$$,&$3); int ret = doCoercion($$,INIC_VAR); if(ret != 0) return ret; };
 
 lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local { if($3 != 0){$$ = $3; add_child(&$$, &$1);} } | identificador_local { $$ = $1; };
 
-atribuicao: identificador_expressao '=' expressao {$$ = create_node($2, ATRIBUICAO); add_child(&$$, &$1); add_child(&$$,&$3); } ;
+atribuicao: identificador_expressao '=' expressao {$$ = create_node($2, ATRIBUICAO); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,ATRIBUICAO); if(ret != 0) return ret; } ;
 
 lista_argumentos: argumentos_entrada { $$ = $1; } | { $$ = 0; };
 argumentos_entrada: argumentos_entrada ',' argumento { $$ = $1; add_child(&$$, &$3); } | argumento { $$ = $1; };
@@ -235,32 +235,32 @@ chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')' {if(isUndecl(stack,*$1
 */
 
 expressao: E { $$ = $1;};
-E: E TK_OC_OR T { $$ = create_node($2, EXP_OR); add_child(&$$, &$1); add_child(&$$, &$3); }  | T { $$ = $1; };
+E: E TK_OC_OR T { $$ = create_node($2, EXP_OR); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; }  | T { $$ = $1; };
 
-T: T TK_OC_AND F { $$ = create_node($2, EXP_AND); add_child(&$$, &$1); add_child(&$$, &$3); } | F { $$ = $1; };
+T: T TK_OC_AND F { $$ = create_node($2, EXP_AND); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; } | F { $$ = $1; };
 
-F: F TK_OC_EQ G { $$ = create_node($2, EXP_EQ); add_child(&$$, &$1); add_child(&$$, &$3); } | F TK_OC_NE G  { $$ = create_node($2, EXP_NE); add_child(&$$, &$1); add_child(&$$, &$3); } | G { $$ = $1; };
+F: F TK_OC_EQ G { $$ = create_node($2, EXP_EQ); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; } | F TK_OC_NE G  { $$ = create_node($2, EXP_NE); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; } | G { $$ = $1; };
 
-G: G TK_OC_GE H { $$ = create_node($2, EXP_GE); add_child(&$$, &$1); add_child(&$$,&$3); } | 
-   G TK_OC_LE H { $$ = create_node($2, EXP_LE); add_child(&$$, &$1); add_child(&$$, &$3); } |
-   G '<' H { $$ = create_node($2, EXP_LT); add_child(&$$, &$1); add_child(&$$, &$3); }  |
-   G '>' H { $$ = create_node($2, EXP_GT); add_child(&$$, &$1); add_child(&$$, &$3); } |
+G: G TK_OC_GE H { $$ = create_node($2, EXP_GE); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; } | 
+   G TK_OC_LE H { $$ = create_node($2, EXP_LE); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; } |
+   G '<' H { $$ = create_node($2, EXP_LT); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; }  |
+   G '>' H { $$ = create_node($2, EXP_GT); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; } |
    H { $$ = $1; };
 
-H: H '+' I { $$ = create_node($2, BIN_PLUS); add_child(&$$, &$1); add_child(&$$, &$3); } | H '-' I { $$ = create_node($2, BIN_MINUS); add_child(&$$, &$1); add_child(&$$, &$3); } | I { $$ = $1; };
+H: H '+' I { $$ = create_node($2, BIN_PLUS); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; } | H '-' I { $$ = create_node($2, BIN_MINUS); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; } | I { $$ = $1; };
 
-I: I '%' J { $$ = create_node($2, BIN_PERCENT); add_child(& $$, & $1); add_child(& $$, & $3); }| I '/' J { $$ = create_node($2, BIN_DIV); add_child(& $$, & $1); add_child(& $$, & $3); } | I '*' J { $$ = create_node($2, BIN_MULT); add_child(& $$, & $1); add_child(& $$, & $3); }| J { $$ = $1; };
+I: I '%' J { $$ = create_node($2, BIN_PERCENT); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; }| I '/' J { $$ = create_node($2, BIN_DIV); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; } | I '*' J { $$ = create_node($2, BIN_MULT); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) return ret; }| J { $$ = $1; };
 
-J: '-' K { $$ = create_node($1, UN_MINUS); add_child(&$$, &$2); } | '!' K { $$ = create_node($1, UN_NEG); add_child(&$$, &$2); } | L { $$ = $1; };
+J: '-' K { $$ = create_node($1, UN_MINUS); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) return ret; } | '!' K { $$ = create_node($1, UN_NEG); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) return ret; } | L { $$ = $1; };
 
-K: '-' K { $$ = create_node($1, UN_MINUS); add_child(&$$, &$2); } | '!' K { $$ = create_node($1, UN_NEG); add_child(&$$, &$2); } | L { $$ = $1; };
+K: '-' K { $$ = create_node($1, UN_MINUS); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) return ret; } | '!' K { $$ = create_node($1, UN_NEG); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) return ret; } | L { $$ = $1; };
 
 L: '(' E ')' { $$ = $2; } | operando { $$ = $1; };
 
 operando: literal { $$ = $1; } | chamada_funcao { $$ = $1; } | identificador_expressao { $$ = $1; };
 
-identificador_expressao: TK_IDENTIFICADOR { if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, VARIABLE)){ return printErrorUse(*$1,VARIABLE, find(stack,$1->input)); } $$ = create_leaf($1, IDENTIFICADOR); } | TK_IDENTIFICADOR '[' lista_expressoes ']' 
-{  if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, ARRAY)){ return printErrorUse(*$1,ARRAY, find(stack,$1->input));} $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR);  add_child(&$$,&identLeaf); add_child(&$$,&$3); deleteValue($4); } ; //REVISAR - Passando o primeiro '[' , constroi o [] no ast.c
+identificador_expressao: TK_IDENTIFICADOR { if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, VARIABLE)){ return printErrorUse(*$1,VARIABLE, find(stack,$1->input)); } $$ = create_leaf($1, IDENTIFICADOR, getType(stack,*$1)); } | TK_IDENTIFICADOR '[' lista_expressoes ']' 
+{  if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, ARRAY)){ return printErrorUse(*$1,ARRAY, find(stack,$1->input));} $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR, getType(stack,*$1));  add_child(&$$,&identLeaf); add_child(&$$,&$3); deleteValue($4); } ; //Cant pass type here, needs to check the hashtable
 
 
 

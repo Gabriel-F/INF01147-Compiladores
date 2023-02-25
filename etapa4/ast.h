@@ -54,6 +54,8 @@
 #define LISTA_EXP 543
 #define DEC_FUNC 544
 #define INIC_VAR 545
+#define BIN_OP 546
+#define UN_OP 547
 
 #define VAL_IDENTIFICADOR 1
 #define VAL_LIT_INT 2
@@ -64,7 +66,21 @@
 #define VAL_OP_COMP 7
 #define VAL_SPEC 8
 
+#define INT_TYPE 1
+#define FLOAT_TYPE 2
+#define CHAR_TYPE 3
+#define BOOL_TYPE 4
 
+#define ERR_UNDECLARED 10 //2.2
+#define ERR_DECLARED 11 //2.2
+#define ERR_VARIABLE 20 //2.3
+#define ERR_ARRAY 21 //2.3
+#define ERR_FUNCTION 22 //2.3
+#define ERR_CHAR_TO_INT 31 //2.4
+#define ERR_CHAR_TO_FLOAT 32 //2.4
+#define ERR_CHAR_TO_BOOL 33 //2.4
+#define ERR_CHAR_VECTOR 34 //2.4
+#define ERR_X_TO_CHAR 35 //2.4
 
 
 //void exporta(void *);
@@ -95,15 +111,18 @@ typedef struct astNode{
     int type;
     VALOR_T * value;
     struct astChildren * children;
+    int dataType;
 } ASTNODE;
 
 void deleteValue(VALOR_T * value);
 
 void add_child(ASTNODE ** root, ASTNODE ** child);
 
-ASTNODE * create_node(VALOR_T * value, int type);
+ASTNODE * create_node(VALOR_T * value, int type); //Infer data type
 
-ASTNODE * create_leaf(VALOR_T * value , int type);
+ASTNODE * create_leaf(VALOR_T * value , int type, int dataType); //dataType stores the data type for future type inferences
+
+int doCoercion(ASTNODE * root, int opType); //Returns true if coercion can be done, otherwise returns false
 
 VALOR_T * create_value(int type, char * text, int lineNumber);
 

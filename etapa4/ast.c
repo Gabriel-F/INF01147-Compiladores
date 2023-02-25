@@ -41,13 +41,12 @@ ASTNODE * create_node(VALOR_T * value , int type){
     node->type = type;
     node->value = value;
     node->children = newChild;
+    node->dataType = 0; //Do the coercion after add all childs
 
-
-    
     return node;
 }
 
-ASTNODE * create_leaf(VALOR_T * value , int type){
+ASTNODE * create_leaf(VALOR_T * value , int type, int dataType){
     ASTNODE * node = (ASTNODE*)malloc(sizeof(ASTNODE));
     ASTCHILDREN * newChild = (ASTCHILDREN*)malloc(sizeof(ASTCHILDREN));
 
@@ -56,7 +55,7 @@ ASTNODE * create_leaf(VALOR_T * value , int type){
     node->type = type;
     node->value = value;
     node->children = newChild;
-    
+    node->dataType = dataType;
     return node;
 }
 
@@ -82,6 +81,49 @@ VALOR_T * create_value(int type, char * text, int lineNumber){
     value->type = type;
 
     return value;
+}
+
+int doCoercion(ASTNODE *root, int opType){ //opType is the type of the operation: assignment, inicialization, arithmetic...
+    //Assignment, inicialization checks the first child
+    //Otherwise the order doesn't matter
+
+    if(opType == INIC_VAR || opType == ATRIBUICAO || opType == BIN_OP){
+        int mainType = root->children->child->dataType; // Gets the type of the first child;
+        int secondType = root->children->nextChild->child->dataType; // Gets the type on the right of the operation
+        printf("mainType: (%s) %d  -  secondType %d \n",root->children->child->value->input,mainType,secondType);
+        if(secondType == CHAR_TYPE){
+            if(mainType == INT_TYPE){
+                printf("ERR_CHAR_TO_INT: Conversao implicita proibida de Char para Int na linha %d \n", root->value->lineNumber);
+                return ERR_CHAR_TO_INT;
+            }
+            if(mainType == FLOAT_TYPE){
+                printf("ERR_CHAR_TO_FLOAT: Conversao implicita proibida de Char para Float na linha %d \n", root->value->lineNumber);
+                return ERR_CHAR_TO_FLOAT;
+            }
+            if(mainType == BOOL_TYPE){
+                printf("ERR_CHAR_TO_BOOL: Conversao implicita proibida de Char para Bool na linha %d \n", root->value->lineNumber);
+                return ERR_CHAR_TO_BOOL;
+            }
+        }
+        if(mainType == CHAR_TYPE){
+            
+            if(secondType == INT_TYPE){
+                printf("ERR_X_TO_CHAR: Conversao implicita proibida de Int para Char na linha %d \n", root->value->lineNumber);
+                return ERR_X_TO_CHAR;
+            }
+            if(secondType == FLOAT_TYPE){
+                printf("ERR_X_TO_CHAR: Conversao implicita proibida de Float para Char na linha %d \n", root->value->lineNumber);
+                return ERR_X_TO_CHAR;
+            }
+            if(secondType == BOOL_TYPE){
+                printf("ERR_X_TO_CHAR: Conversao implicita proibida de Bool para Char na linha %d \n", root->value->lineNumber);
+                return ERR_X_TO_CHAR;
+            }
+        }
+        root->dataType = mainType;
+    }
+
+    return 0;
 }
 
 void exporta(void * node){

@@ -55,8 +55,6 @@ TNODE * findNode(STACKNODE *st, char * identifier){
     }else{
         return tNode;
     }
-    
-    
 
 }
 TNODE * find(STACK *st, char * identifier){
@@ -174,4 +172,10 @@ bool checkUse(STACK *st, VALOR_T var, int usingType){
         return true;
     }else
         return false;
+}
+
+int getType(STACK *st, VALOR_T identifier){
+    TNODE * tnode = find(st, identifier.input);
+
+    return tnode->type;
 }

@@ -7,18 +7,9 @@ int foo(int a,int b){
 
 int main(){
 	
-	int fa;
- 	int ca;
-	int ba;
- 	int da;
-	a = 2+2;
-	ba = 2+2;
-	fa = 2+2;
-	ca = 2+2;
-	int a <= 2;
-	
-	int b;
-	b();
+	bool a;
+	char abc;
+	abc = a;
 }
 
 
