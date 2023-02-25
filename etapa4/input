@@ -1,11 +1,11 @@
 int a;
-
+int arr[24213^21312];
 int foo(int a,int b){
 
 	int fa <= 2;
 }
 
-char func(){
+int func(){
 
 	char c <= 'a';
 	return c;
@@ -20,7 +20,7 @@ int main(){
 		int a <= 2;
 	}else{
 		float b;
-		b[2+2] = 2;
+		func = 2;
 
 	};
 }

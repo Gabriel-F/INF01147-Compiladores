@@ -9,6 +9,8 @@
         "string_view": "c",
         "input": "c",
         "algorithm": "c",
-        "random": "c"
+        "random": "c",
+        "typeinfo": "cpp",
+        "hashmap.h": "c"
     }
 }

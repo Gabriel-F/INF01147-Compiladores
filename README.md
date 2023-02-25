@@ -3,6 +3,7 @@ Repositório para o trabalho de compiladores
 
 # ETAPA 4
 
+- [ ] - Fix problems of E3
 - [ ] - Test ERR_UNDECLARED
 - [ ] - Test ERR_DECLARED
 - [ ] - Test ERR_VARAIBLE

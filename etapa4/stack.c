@@ -133,7 +133,7 @@ int printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared){
     printf("print error use\n");
     int returnCode ;
     if(varDeclared->type == CHAR_TYPE && usingType == ARRAY){
-        printf("ERR_CHAR_VECTOR: variavel %s sendo utilizada como:",varDeclared->lexical_value.input);
+        printf("ERR_CHAR_VECTOR: arranjos nao podem ser do tipo char (%s), linha: %d",varDeclared->lexical_value.input,var.lineNumber);
         returnCode = ERR_CHAR_VECTOR;
     }else{
         switch (varDeclared->category)
