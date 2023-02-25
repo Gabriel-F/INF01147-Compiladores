@@ -81,6 +81,8 @@ TNODE * createItem(int category, int type, VALOR_T lexical_value){
     tNode->lexical_value = lexical_value;
     tNode->type = type;
     int size;
+
+    //Fix size whe is array
     switch(type){
         case INT_TYPE:
             size = 4;
@@ -96,6 +98,7 @@ TNODE * createItem(int category, int type, VALOR_T lexical_value){
             break;
     }
 
+    
     tNode->size = size;
 
     printf("item created.\n");

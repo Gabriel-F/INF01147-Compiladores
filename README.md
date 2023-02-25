@@ -4,6 +4,8 @@ Repositório para o trabalho de compiladores
 # ETAPA 4
 
 - [ ] - Fix problems of E3
+- [ ] - Size of array on hashtable
+- [ ] - Index of array should be integer (need to be guaranteed)
 - [ ] - Test ERR_UNDECLARED
 - [ ] - Test ERR_DECLARED
 - [ ] - Test ERR_VARAIBLE
