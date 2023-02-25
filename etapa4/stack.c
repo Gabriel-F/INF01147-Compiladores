@@ -26,7 +26,7 @@ void push(STACK *st){
 
     STACKNODE *stNode = (STACKNODE*)malloc(sizeof(STACKNODE));
     stNode->map = newMap;
-    if(st == NULL){
+    if(st->top == NULL){
         stNode->bottom = NULL;
     }else{
         stNode->bottom = st->top;
@@ -38,36 +38,46 @@ void push(STACK *st){
 void pop(STACK *st){
     printf("pop stack\n");
     hashmap_free(st->top->map);//Free table (map)
-    st->top = st->top->bottom; //New top is the bottom of the old top
+    st->top = st->top->bottom; //Update top
+    
 }
 
-TNODE * find(STACK *st, char * identifier){
-
+TNODE * findNode(STACKNODE *st, char * identifier){
     
-    STACKNODE * top = st->top;
+    if(st == NULL)
+        return NULL;
     TNODE * tNode = NULL;
-    while(top != NULL){
-        //There is a problem when we add literal, because it can have literals with the same input eg: a = 'c'; b = 'c'; Hash need more information
-        tNode = (TNODE*)hashmap_get(top->map, &(TNODE){ .lexical_value.input = identifier });
-        if(tNode == NULL){ //If not found go down on stack
-            top = top->bottom;
-        }else{
-
-            break;
-        }
+    
+    //There is a problem when we add literal, because it can have literals with the same input eg: a = 'c'; b = 'c'; Hash need more information
+    tNode = (TNODE*)hashmap_get(st->map, &(TNODE){ .lexical_value.input = identifier });
+    if(tNode == NULL){ //If not found go down on stack
+        return findNode(st->bottom, identifier);
+    }else{
+        return tNode;
     }
+    
+    
 
-    return tNode;
+}
+TNODE * find(STACK *st, char * identifier){
+    
+    if(st == NULL)
+        return NULL;
+    return findNode(st->top,identifier);
 
 }
 
 void addItem(STACK *st, TNODE * value){
     STACKNODE * stNode = st->top;
     hashmap_set(stNode->map, value);
+    printf("added: %s \n",value->lexical_value.input);
 }
 
+
+//Change lexical_value to pointer
 TNODE * createItem(int category, int type, VALOR_T lexical_value){
     TNODE * tNode = (TNODE*)malloc(sizeof(TNODE));
+    
     tNode->category = category;
     tNode->line = lexical_value.lineNumber;
     tNode->lexical_value = lexical_value;
@@ -96,6 +106,7 @@ TNODE * createItem(int category, int type, VALOR_T lexical_value){
 
 bool isDecl(STACK *st, VALOR_T identifier){
 
+    
     TNODE * tnode;
 
     tnode = hashmap_get(st->top->map, &(TNODE){.lexical_value.input = identifier.input});
@@ -104,6 +115,13 @@ bool isDecl(STACK *st, VALOR_T identifier){
     
     return true;
 }
+bool isUndecl(STACK *st, VALOR_T identifier){
+    printf("identifier.input: %s\n",identifier.input);
+    TNODE * tnode = find(st,identifier.input);
+    if(tnode == NULL)
+        return true;
+    return false;
+}
 
 void printErrorDecl(VALOR_T var, TNODE * varDeclared){
     printf("ERR_DECLARED: %s (linha: %d) ja declarada na linha: %d\n", var.input, var.lineNumber,varDeclared->line);
@@ -111,4 +129,44 @@ void printErrorDecl(VALOR_T var, TNODE * varDeclared){
 
 void printErrorUndecl(VALOR_T var){
     printf("ERR_UNDECLARED: %s (linha: %d) não declarada \n", var.input,var.lineNumber);
+}
+
+void printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared){
+    printf("print error use\n");
+    switch (varDeclared->category)
+    {
+    case VARIABLE:
+        printf("ERR_VARIABLE: variavel %s sendo utilizada como:",varDeclared->lexical_value.input);
+        break;
+    case ARRAY:
+        printf("ERR_ARRAY: array %s sendo utilizada como:",varDeclared->lexical_value.input);
+        break;
+    case FUNCTION:
+        printf("ERR_ARRAY: funcao %s sendo utilizada como:",varDeclared->lexical_value.input);
+        break;
+    
+    }
+    switch (usingType)
+    {
+    case VARIABLE:
+        printf(" variavel ");
+        break;
+    case ARRAY:
+        printf(" array ");
+        break;
+    case FUNCTION:
+        printf(" funcao ");
+        break;
+    }
+    printf("\n");
+}
+
+bool checkUse(STACK *st, VALOR_T var, int usingType){
+
+    printf("checking use\n");
+    TNODE * tnode = find(st,var.input);
+    if(tnode->category == usingType){
+        return true;
+    }else
+        return false;
 }

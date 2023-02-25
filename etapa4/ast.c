@@ -24,9 +24,10 @@ void add_child(ASTNODE ** root, ASTNODE ** child){
 }
 
 void deleteValue(VALOR_T * value){
-  
-        free(value->tokenValue.valString);
-        free(value);
+
+        //Not deleting value because lexical_value of tableNode is deleted 
+        //free(value->tokenValue.valString);
+        //free(value);
         
 }
 
