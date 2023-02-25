@@ -225,7 +225,7 @@ controle_fluxo_while: TK_PR_WHILE '(' expressao ')' bloco_comandos { $$ = create
 
 retorno: TK_PR_RETURN expressao { $$ = create_node( $1, RETURN); add_child(&$$,&$2); } ;
 
-chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')' {if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } $$ = create_node($1, CHAMADA_FUNC); add_child(&$$, &$3); } ;
+chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')' {if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, FUNCTION)){ return printErrorUse(*$1,FUNCTION, find(stack,$1->input)); } $$ = create_node($1, CHAMADA_FUNC); add_child(&$$, &$3); } ;
 
 /* -----------------------------------------------------------------------
 	
@@ -259,8 +259,8 @@ L: '(' E ')' { $$ = $2; } | operando { $$ = $1; };
 
 operando: literal { $$ = $1; } | chamada_funcao { $$ = $1; } | identificador_expressao { $$ = $1; };
 
-identificador_expressao: TK_IDENTIFICADOR { if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, VARIABLE)){ printErrorUse(*$1,VARIABLE, find(stack,$1->input)); } $$ = create_leaf($1, IDENTIFICADOR); } | TK_IDENTIFICADOR '[' lista_expressoes ']' 
-{  if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, ARRAY)){ printErrorUse(*$1,ARRAY, find(stack,$1->input));} $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR);  add_child(&$$,&identLeaf); add_child(&$$,&$3); deleteValue($4); } ; //REVISAR - Passando o primeiro '[' , constroi o [] no ast.c
+identificador_expressao: TK_IDENTIFICADOR { if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, VARIABLE)){ return printErrorUse(*$1,VARIABLE, find(stack,$1->input)); } $$ = create_leaf($1, IDENTIFICADOR); } | TK_IDENTIFICADOR '[' lista_expressoes ']' 
+{  if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, ARRAY)){ return printErrorUse(*$1,ARRAY, find(stack,$1->input));} $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR);  add_child(&$$,&identLeaf); add_child(&$$,&$3); deleteValue($4); } ; //REVISAR - Passando o primeiro '[' , constroi o [] no ast.c
 
 
 

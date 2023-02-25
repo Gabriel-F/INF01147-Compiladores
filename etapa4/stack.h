@@ -70,6 +70,6 @@ void printErrorDecl(VALOR_T var, TNODE * varDeclared); //Prints error whe declar
 
 void printErrorUndecl(VALOR_T var); //Prints error whe undeclared
 
-void printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared);
+int printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared); //Print and return error code VARIALBE, ARRAY or FUNCTION
 
 bool checkUse(STACK *st, VALOR_T var, int type); //Checks if it's well used

@@ -131,18 +131,22 @@ void printErrorUndecl(VALOR_T var){
     printf("ERR_UNDECLARED: %s (linha: %d) não declarada \n", var.input,var.lineNumber);
 }
 
-void printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared){
+int printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared){
     printf("print error use\n");
+    int returnCode ;
     switch (varDeclared->category)
     {
     case VARIABLE:
         printf("ERR_VARIABLE: variavel %s sendo utilizada como:",varDeclared->lexical_value.input);
+        returnCode = ERR_VARIABLE;
         break;
     case ARRAY:
         printf("ERR_ARRAY: array %s sendo utilizada como:",varDeclared->lexical_value.input);
+        returnCode = ERR_ARRAY;
         break;
     case FUNCTION:
-        printf("ERR_ARRAY: funcao %s sendo utilizada como:",varDeclared->lexical_value.input);
+        printf("ERR_FUNCAO: funcao %s sendo utilizada como:",varDeclared->lexical_value.input);
+        returnCode = ERR_FUNCTION;
         break;
     
     }
@@ -159,6 +163,7 @@ void printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared){
         break;
     }
     printf("\n");
+    return returnCode;
 }
 
 bool checkUse(STACK *st, VALOR_T var, int usingType){

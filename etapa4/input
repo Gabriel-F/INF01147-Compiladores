@@ -18,7 +18,7 @@ int main(){
 	int a <= 2;
 	
 	int b;
-	b = foo(a,fa);
+	b();
 }
 
 
