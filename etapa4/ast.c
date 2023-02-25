@@ -83,6 +83,11 @@ VALOR_T * create_value(int type, char * text, int lineNumber){
     return value;
 }
 
+int doCoercionWithType(ASTNODE *root, int opType, int type){
+    root->dataType = type;
+    return 0;
+}
+
 int doCoercion(ASTNODE *root, int opType){ //opType is the type of the operation: assignment, inicialization, arithmetic...
     //Assignment, inicialization checks the first child
     //Otherwise the order doesn't matter
@@ -120,7 +125,25 @@ int doCoercion(ASTNODE *root, int opType){ //opType is the type of the operation
                 return ERR_X_TO_CHAR;
             }
         }
-        root->dataType = mainType;
+        //Inferences
+        if(opType == INIC_VAR || opType == ATRIBUICAO){
+            root->dataType = mainType; //mainType has priority
+        }else if(opType == BIN_OP){
+            //Follow coercion rules
+            if(mainType == secondType){
+                root->dataType = mainType;
+            }else if(mainType == FLOAT_TYPE || secondType == FLOAT_TYPE){ //Float dominates 1st
+                root->dataType = FLOAT_TYPE;
+            }else if(mainType == INT_TYPE || secondType == INT_TYPE){ //Int 2nd
+                root->dataType = INT_TYPE;
+            }else{ //Bool 3rd
+                root->dataType = BOOL_TYPE; //Never occurs I think
+            }
+        }
+    }else if(opType == UN_OP){
+        root->dataType = root->children->child->dataType;
+    }else if(opType == IF || opType == IF_ELSE || opType == WHILE){
+        root->dataType = root->children->child->dataType;
     }
 
     return 0;

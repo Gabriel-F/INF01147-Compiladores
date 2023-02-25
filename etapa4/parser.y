@@ -218,14 +218,14 @@ lista_argumentos: argumentos_entrada { $$ = $1; } | { $$ = 0; };
 argumentos_entrada: argumentos_entrada ',' argumento { $$ = $1; add_child(&$$, &$3); } | argumento { $$ = $1; };
 argumento: expressao { $$ = $1; };
 
-controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN bloco_comandos  { $$ = create_node($1, IF); add_child(&$$,&$3); add_child(&$$,&$6);  } | 
-                TK_PR_IF '(' expressao ')' TK_PR_THEN bloco_comandos TK_PR_ELSE bloco_comandos { $$ = create_node($1, IF_ELSE); add_child(&$$,&$3); add_child(&$$,&$6); add_child(&$$,&$8); }; // REVISAR
+controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos  { $$ = create_node($1, IF); add_child(&$$,&$3); add_child(&$$,&$7); int ret = doCoercion($$,IF); if(ret != 0) return ret;  } | 
+                TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos TK_PR_ELSE push_stack bloco_comandos { $$ = create_node($1, IF_ELSE); add_child(&$$,&$3); add_child(&$$,&$7); add_child(&$$,&$10); int ret = doCoercion($$,IF_ELSE); if(ret != 0) return ret; }; // REVISAR
 
-controle_fluxo_while: TK_PR_WHILE '(' expressao ')' bloco_comandos { $$ = create_node($1, WHILE); add_child(&$$, &$3); add_child(&$$, &$5); } ;
+controle_fluxo_while: TK_PR_WHILE '(' expressao ')' bloco_comandos { $$ = create_node($1, WHILE); add_child(&$$, &$3); add_child(&$$, &$5); int ret = doCoercion($$,WHILE); if(ret != 0) return ret;} ;
 
-retorno: TK_PR_RETURN expressao { $$ = create_node( $1, RETURN); add_child(&$$,&$2); } ;
+retorno: TK_PR_RETURN expressao { $$ = create_node( $1, RETURN); add_child(&$$,&$2); int ret = doCoercion($$,UN_OP); if(ret != 0) return ret; } ;
 
-chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')' {if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, FUNCTION)){ return printErrorUse(*$1,FUNCTION, find(stack,$1->input)); } $$ = create_node($1, CHAMADA_FUNC); add_child(&$$, &$3); } ;
+chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')' {if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, FUNCTION)){ return printErrorUse(*$1,FUNCTION, find(stack,$1->input)); } $$ = create_node($1, CHAMADA_FUNC); add_child(&$$, &$3); int ret = doCoercionWithType($$,CHAMADA_FUNC,getType(stack,*$1)); if(ret != 0) return ret; } ;
 
 /* -----------------------------------------------------------------------
 	

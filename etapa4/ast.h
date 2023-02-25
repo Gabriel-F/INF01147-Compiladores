@@ -124,10 +124,13 @@ ASTNODE * create_leaf(VALOR_T * value , int type, int dataType); //dataType stor
 
 int doCoercion(ASTNODE * root, int opType); //Returns true if coercion can be done, otherwise returns false
 
+int doCoercionWithType(ASTNODE *root, int opType, int type);
+
 VALOR_T * create_value(int type, char * text, int lineNumber);
 
 void printLabels(void * node);
 
 void printAst(ASTNODE * node);
+
 
 #endif

@@ -5,11 +5,26 @@ int foo(int a,int b){
 	int fa <= 2;
 }
 
+char func(){
+
+	char c <= 'a';
+	return c;
+}
+
 int main(){
 	
-	bool a;
-	char abc;
-	abc = a;
+	int a;
+	float b;
+	float c;
+	if(2 + 2 == 3) then {
+		int a <= 2;
+	}else{
+		float b;
+		b = 2.2 + 3 + a + c;
+		char c;
+		b = c;
+
+	};
 }
 
 
