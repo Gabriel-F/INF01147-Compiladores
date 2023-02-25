@@ -1,15 +1,15 @@
 # INF01147-Compiladores
 Repositório para o trabalho de compiladores
 
-# ETAPA 1
+# ETAPA 4
 
-- [ ] - Testar
-- [X] - Contagem de linhas
-- [X] - Ignorar Comentários e Espaços
-- [X] - Lançar erros léxicos
-- [X] - Tokens para palavras reservadas
-- [X] - Tokens para caracteres especiais
-- [X] - Tokens para Operadores Compostos
-- [X] - Tokens para identificadores
-- [X] - Tokens para literais
-
+- [ ] - Test ERR_UNDECLARED
+- [ ] - Test ERR_DECLARED
+- [ ] - Test ERR_VARAIBLE
+- [ ] - Test ERR_ARRAY
+- [ ] - Test ERR_FUNCTION
+- [ ] - Test ERR_CHAR_TO_INT
+- [ ] - Test ERR_CHAR_TO_FLOAT
+- [ ] - Test ERR_CHAR_TO_BOOL
+- [ ] - Test ERR_CHAR_VECTOR
+- [ ] - Test ERR_X_TO_CHAR
