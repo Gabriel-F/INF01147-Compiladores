@@ -1613,7 +1613,7 @@ yyreduce:
 
   case 16: /* var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']'  */
 #line 150 "parser.y"
-                                                                 { if(isDecl(stack,*(yyvsp[-3].valor_lexico))) { printErrorDecl(*(yyvsp[-3].valor_lexico),find(stack,(yyvsp[-3].valor_lexico)->input));} addItem(stack, createItem(ARRAY,currType,*(yyvsp[-3].valor_lexico))); deleteValue((yyvsp[-3].valor_lexico)); }
+                                                                 { if(isDecl(stack,*(yyvsp[-3].valor_lexico))) { printErrorDecl(*(yyvsp[-3].valor_lexico),find(stack,(yyvsp[-3].valor_lexico)->input));} addItem(stack, createItem(ARRAY,currType,*(yyvsp[-3].valor_lexico))); if(!checkUse(stack,*(yyvsp[-3].valor_lexico), ARRAY)){ return printErrorUse(*(yyvsp[-3].valor_lexico),ARRAY, find(stack,(yyvsp[-3].valor_lexico)->input)); } deleteValue((yyvsp[-3].valor_lexico)); }
 #line 1618 "parser.tab.c"
     break;
 

@@ -20,9 +20,7 @@ int main(){
 		int a <= 2;
 	}else{
 		float b;
-		b = 2.2 + 3 + a + c;
-		char c;
-		b = c;
+		b[2+2] = 2;
 
 	};
 }

@@ -132,33 +132,38 @@ void printErrorUndecl(VALOR_T var){
 int printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared){
     printf("print error use\n");
     int returnCode ;
-    switch (varDeclared->category)
-    {
-    case VARIABLE:
-        printf("ERR_VARIABLE: variavel %s sendo utilizada como:",varDeclared->lexical_value.input);
-        returnCode = ERR_VARIABLE;
-        break;
-    case ARRAY:
-        printf("ERR_ARRAY: array %s sendo utilizada como:",varDeclared->lexical_value.input);
-        returnCode = ERR_ARRAY;
-        break;
-    case FUNCTION:
-        printf("ERR_FUNCAO: funcao %s sendo utilizada como:",varDeclared->lexical_value.input);
-        returnCode = ERR_FUNCTION;
-        break;
-    
-    }
-    switch (usingType)
-    {
-    case VARIABLE:
-        printf(" variavel ");
-        break;
-    case ARRAY:
-        printf(" array ");
-        break;
-    case FUNCTION:
-        printf(" funcao ");
-        break;
+    if(varDeclared->type == CHAR_TYPE && usingType == ARRAY){
+        printf("ERR_CHAR_VECTOR: variavel %s sendo utilizada como:",varDeclared->lexical_value.input);
+        returnCode = ERR_CHAR_VECTOR;
+    }else{
+        switch (varDeclared->category)
+        {
+        case VARIABLE:
+            printf("ERR_VARIABLE: variavel %s sendo utilizada como:",varDeclared->lexical_value.input);
+            returnCode = ERR_VARIABLE;
+            break;
+        case ARRAY:
+            printf("ERR_ARRAY: array %s sendo utilizada como:",varDeclared->lexical_value.input);
+            returnCode = ERR_ARRAY;
+            break;
+        case FUNCTION:
+            printf("ERR_FUNCAO: funcao %s sendo utilizada como:",varDeclared->lexical_value.input);
+            returnCode = ERR_FUNCTION;
+            break;
+        
+        }
+        switch (usingType)
+        {
+        case VARIABLE:
+            printf(" variavel na linha: %d ", var.lineNumber);
+            break;
+        case ARRAY:
+            printf(" array na linha: %d", var.lineNumber);
+            break;
+        case FUNCTION:
+            printf(" funcao na linha: %d", var.lineNumber);
+            break;
+        }
     }
     printf("\n");
     return returnCode;
@@ -168,6 +173,9 @@ bool checkUse(STACK *st, VALOR_T var, int usingType){
 
     printf("checking use\n");
     TNODE * tnode = find(st,var.input);
+    if(usingType == ARRAY && tnode->type == CHAR_TYPE){
+        return false;
+    }
     if(tnode->category == usingType){
         return true;
     }else

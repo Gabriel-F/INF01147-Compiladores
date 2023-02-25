@@ -147,7 +147,7 @@ identificador : TK_IDENTIFICADOR {if(isDecl(stack,*$1)) { printErrorDecl(*$1,fin
 lista_dimensional_inteiro: TK_LIT_INT;
 lista_dimensional: lista_dimensional_inteiro ;
 lista_dimensional: lista_dimensional '^' lista_dimensional_inteiro ;
-var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']' { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input));} addItem(stack, createItem(ARRAY,currType,*$1)); deleteValue($1); };
+var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']' { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input));} addItem(stack, createItem(ARRAY,currType,*$1)); if(!checkUse(stack,*$1, ARRAY)){ return printErrorUse(*$1,ARRAY, find(stack,$1->input)); } deleteValue($1); };
 
 declaracao_var_global: tipo lista_de_identificadores ';' { $$ = 0;};//{ $$ = $2; };//{ $$ = create_node($2, 0, 0, DEC_VAR_GLOBAL);};
 lista_de_identificadores: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*$1)); deleteValue($1); };
