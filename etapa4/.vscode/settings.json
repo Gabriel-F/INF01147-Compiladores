@@ -11,6 +11,7 @@
         "algorithm": "c",
         "random": "c",
         "typeinfo": "cpp",
-        "hashmap.h": "c"
+        "hashmap.h": "c",
+        "array.h": "c"
     }
 }
