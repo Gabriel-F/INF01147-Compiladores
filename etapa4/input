@@ -9,5 +9,9 @@ int main(){
 	
 	char c;
 
-	c = arr[1];
+	c = '2';
+}
+
+int isWorking(int a){
+	return a + 2;
 }
