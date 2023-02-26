@@ -1615,13 +1615,13 @@ yyreduce:
 
   case 13: /* lista_dimensional_inteiro: TK_LIT_INT  */
 #line 150 "parser.y"
-                                      {insertArray(&arr,atoi((yyvsp[0].valor_lexico)->input));}
+                                      { insertArray(&arr,atoi((yyvsp[0].valor_lexico)->input)); }
 #line 1620 "parser.tab.c"
     break;
 
   case 16: /* var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']'  */
 #line 153 "parser.y"
-                                                                 { if(isDecl(stack,*(yyvsp[-3].valor_lexico))) { printErrorDecl(*(yyvsp[-3].valor_lexico),find(stack,(yyvsp[-3].valor_lexico)->input));} addItem(stack, createItemArray(ARRAY,currType,*(yyvsp[-3].valor_lexico),&arr)); if(!checkUse(stack,*(yyvsp[-3].valor_lexico), ARRAY)){ return printErrorUse(*(yyvsp[-3].valor_lexico),ARRAY, find(stack,(yyvsp[-3].valor_lexico)->input)); }   deleteValue((yyvsp[-3].valor_lexico)); }
+                                                                 { if(isDecl(stack,*(yyvsp[-3].valor_lexico))) { printErrorDecl(*(yyvsp[-3].valor_lexico),find(stack,(yyvsp[-3].valor_lexico)->input));} addItem(stack, createItemArray(ARRAY,currType,*(yyvsp[-3].valor_lexico),&arr)); if(!checkUse(stack,*(yyvsp[-3].valor_lexico), ARRAY)){ return printErrorUse(*(yyvsp[-3].valor_lexico),ARRAY, find(stack,(yyvsp[-3].valor_lexico)->input)); } deleteValue((yyvsp[-3].valor_lexico)); }
 #line 1626 "parser.tab.c"
     break;
 
@@ -1693,19 +1693,19 @@ yyreduce:
 
   case 30: /* corpo: bloco_comandos  */
 #line 175 "parser.y"
-                       { (yyval.no) = (yyvsp[0].no); pop(stack); }
+                       { (yyval.no) = (yyvsp[0].no); }
 #line 1698 "parser.tab.c"
     break;
 
   case 31: /* bloco_comandos: '{' lista_comandos '}'  */
 #line 177 "parser.y"
-                                         { (yyval.no) = (yyvsp[-1].no); }
+                                         { (yyval.no) = (yyvsp[-1].no); pop(stack); }
 #line 1704 "parser.tab.c"
     break;
 
   case 32: /* bloco_comandos: '{' '}'  */
 #line 177 "parser.y"
-                                                                {  (yyval.no) = 0; }
+                                                                            {  (yyval.no) = 0; pop(stack); }
 #line 1710 "parser.tab.c"
     break;
 
@@ -1747,7 +1747,7 @@ yyreduce:
 
   case 39: /* comando: push_stack bloco_comandos  */
 #line 198 "parser.y"
-                                   { (yyval.no) = (yyvsp[-1].no);}
+                                   { (yyval.no) = (yyvsp[0].no);}
 #line 1752 "parser.tab.c"
     break;
 

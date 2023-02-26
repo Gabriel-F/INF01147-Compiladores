@@ -1,21 +1,13 @@
+//err_variable
 
-int foo(){
+// Caso o identificador dito variável seja usado
+// como arranjo ou como função, deve-se lançar o erro
+// ERR_VARIABLE
 
-}
 int a;
-int func(){
-	int a;
+
+int main(){
+    a[1] = 1;
+    int b;
+    b = a();
 }
-int main(int c){
-	int b;
-	b = c + 3 +4;
-
-}
-int mainaa(){
-	int a;
-	a = main(2);
-}
-
-
-
-

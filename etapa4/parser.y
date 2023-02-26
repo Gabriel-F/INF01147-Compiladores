@@ -147,10 +147,10 @@ tipo: TK_PR_INT   { $$ = 0; currType = INT_TYPE;}|  //APARENTEMENTE UMA GAMBIARR
 
 identificador : TK_IDENTIFICADOR {if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*$1)); $$ = create_leaf($1,IDENTIFICADOR, currType); }; //REVISAR  FOLHA - VALUE
 
-lista_dimensional_inteiro: TK_LIT_INT {insertArray(&arr,atoi($1->input));};
+lista_dimensional_inteiro: TK_LIT_INT { insertArray(&arr,atoi($1->input)); };
 lista_dimensional: lista_dimensional_inteiro ;
 lista_dimensional: lista_dimensional '^' lista_dimensional_inteiro ;
-var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']' { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input));} addItem(stack, createItemArray(ARRAY,currType,*$1,&arr)); if(!checkUse(stack,*$1, ARRAY)){ return printErrorUse(*$1,ARRAY, find(stack,$1->input)); }   deleteValue($1); };
+var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']' { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input));} addItem(stack, createItemArray(ARRAY,currType,*$1,&arr)); if(!checkUse(stack,*$1, ARRAY)){ return printErrorUse(*$1,ARRAY, find(stack,$1->input)); } deleteValue($1); };
 
 declaracao_var_global: tipo lista_de_identificadores ';' { $$ = 0;};//{ $$ = $2; };//{ $$ = create_node($2, 0, 0, DEC_VAR_GLOBAL);};
 lista_de_identificadores: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*$1)); deleteValue($1); };
@@ -172,9 +172,9 @@ lista_parametros: parametros_entrada { $$ = 0; } | { $$ = 0;};
 parametros_entrada: parametros_entrada ',' parametro { $$ = 0; } | parametro { $$ = 0; };
 parametro: tipo TK_IDENTIFICADOR { if(isDecl(stack,*$2)) { printErrorDecl(*$2,find(stack,$2->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*$2)); $$ = 0; deleteValue($2);};
 
-corpo : bloco_comandos { $$ = $1; pop(stack); };
+corpo : bloco_comandos { $$ = $1; };
 
-bloco_comandos : '{' lista_comandos '}'  { $$ = $2; } | '{' '}' {  $$ = 0; };
+bloco_comandos : '{' lista_comandos '}'  { $$ = $2; pop(stack); } | '{' '}' {  $$ = 0; pop(stack); };
 lista_comandos: comando ';' lista_comandos { if($1 == 0) { $$ = $3; } else {$$ = $1; add_child(&$$, &$3); } } | comando ';'  { $$ = $1; };
 
 
@@ -195,7 +195,7 @@ push_stack: { push(stack); };
 comando: declaracao_var_local { $$ = $1;}| 
          atribuicao { $$ = $1;}| 
          retorno { $$ = $1;}| 
-         push_stack bloco_comandos { $$ = $1;}| 
+         push_stack bloco_comandos { $$ = $2;}| 
          chamada_funcao { $$ = $1;}| 
          controle_fluxo { $$ = $1;}| 
          controle_fluxo_while { $$ = $1;};

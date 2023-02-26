@@ -175,7 +175,7 @@ int printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared){
 
 bool checkUse(STACK *st, VALOR_T var, int usingType){
 
-    printf("checking use\n");
+    printf("checking use of %s\n",var.input);
     TNODE * tnode = find(st,var.input);
     if(usingType == ARRAY && tnode->type == CHAR_TYPE){
         return false;
@@ -195,12 +195,12 @@ int getType(STACK *st, VALOR_T identifier){
 TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * arr){
     printf("array size: %d\n",arr->size);
     int totalSize = 1;
-    for(int i=0;i<arr->size-1;i++){
+    for(int i=0;i<arr->used;i++){
         printf("i: %d = %d \n",i,arr->array[i]);
         totalSize *= arr->array[i];
     }
 
-    printf("sizeofarray: %d\n" , totalSize);
+    
 
     TNODE * tNode = (TNODE*)malloc(sizeof(TNODE));
     
@@ -208,7 +208,26 @@ TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * a
     tNode->line = lexical_value.lineNumber;
     tNode->lexical_value = lexical_value;
     tNode->type = type;
+
+    printf("lexical_value: %s\n",tNode->lexical_value.input);
+
+//Fix size whe is array
+    switch(type){
+        case INT_TYPE:
+            totalSize *= 4;
+            break;
+        case FLOAT_TYPE:
+            totalSize *= 8;
+            break;
+        case BOOL_TYPE:
+            totalSize *= 1;
+            break;
+    }
+    printf("sizeofarray: %d\n" , totalSize);
     tNode->size = totalSize;
+
+
+
 
     freeArray(arr);
     printf("item created.\n");

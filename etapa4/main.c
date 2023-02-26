@@ -22,8 +22,6 @@ int main (int argc, char **argv)
   exporta (arvore);
   libera(arvore);
 
- 
-  
 
   arvore = NULL;
   yylex_destroy();
