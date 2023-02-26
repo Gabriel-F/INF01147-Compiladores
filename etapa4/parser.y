@@ -123,10 +123,11 @@ extern Array arr;
 programa: lista_de_elementos { arvore = $$;  pop(stack); }; // REVISAR
 programa: { $$ = 0; };
 
-lista_de_elementos: lista_de_elementos declaracao_funcao { if($1 == 0){ $$ = $2;} else {$$ = $1; add_child(&$$, &$2);} };
-lista_de_elementos: lista_de_elementos declaracao_var_global { $$ = $1; };
+//lista_de_elementos: lista_de_elementos declaracao_funcao { if($1 == 0){ $$ = $2; } else { $$ = $1; add_child(&$$, &$2);} }; //I think it's impossible to do this with left recursion
+lista_de_elementos: declaracao_funcao lista_de_elementos{ $$ = $1; add_child(&$$, &$2); }; //I think it's impossible to do this with left recursion
+lista_de_elementos: declaracao_var_global lista_de_elementos { $$ = $2; };
 lista_de_elementos: declaracao_funcao { $$ = $1; };
-lista_de_elementos: declaracao_var_global { }; //Nao vai na AST //REVISAR
+lista_de_elementos: declaracao_var_global { $$ = 0;}; //Nao vai na AST //REVISAR
 
 /* -----------------------------------------------------------------------
 	
@@ -174,7 +175,7 @@ parametro: tipo TK_IDENTIFICADOR { if(isDecl(stack,*$2)) { printErrorDecl(*$2,fi
 corpo : bloco_comandos { $$ = $1; pop(stack); };
 
 bloco_comandos : '{' lista_comandos '}'  { $$ = $2; } | '{' '}' {  $$ = 0; };
-lista_comandos: lista_comandos comando ';'  { if($1 == 0){ $$ = $2;} else {$$ = $1; add_child(&$$, &$2);} } | comando ';'  { $$ = $1; };
+lista_comandos: comando ';' lista_comandos { if($1 == 0) { $$ = $3; } else {$$ = $1; add_child(&$$, &$3); } } | comando ';'  { $$ = $1; };
 
 
 //FOLHA : LITERAIS, IDENTIFICADORES
