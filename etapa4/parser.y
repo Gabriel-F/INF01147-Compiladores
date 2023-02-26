@@ -267,7 +267,7 @@ identificador_expressao: TK_IDENTIFICADOR { if(isUndecl(stack,*$1)) { printError
 
 
 //lista_de_elementos: lista_de_elementos declaracao_funcao { if($1 == 0){ $$ = $2;} else {$$ = $1; add_child(&$$, &$2);} };
-lista_expressoes: lista_expressoes '^' expressao { $$=create_node($2,LISTA_EXP); add_child(&$$,&$1); add_child(&$$, &$3); } | expressao { $$ = $1; };
+lista_expressoes: lista_expressoes '^' expressao { $$=create_node($2,LISTA_EXP); add_child(&$$,&$1); add_child(&$$, &$3);} | expressao { $$ = $1; };
 
 %%
 

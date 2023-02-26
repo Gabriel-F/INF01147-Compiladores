@@ -132,5 +132,8 @@ void printLabels(void * node);
 
 void printAst(ASTNODE * node);
 
+//bool isIngeger(ASTNODE * node);
+
+//void printErrorIndexNotInteger(ASTNODE * node);
 
 #endif

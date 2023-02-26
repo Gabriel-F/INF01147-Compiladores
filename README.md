@@ -5,7 +5,6 @@ Repositório para o trabalho de compiladores
 
 - [ ] - Fix problems of E3
 - [X] - Size of array on hashtable
-- [ ] - Index of array should be integer (need to be guaranteed)
 - [ ] - Test ERR_UNDECLARED
 - [ ] - Test ERR_DECLARED
 - [ ] - Test ERR_VARAIBLE

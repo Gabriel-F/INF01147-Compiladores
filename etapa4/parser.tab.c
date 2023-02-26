@@ -2095,13 +2095,13 @@ yyreduce:
 
   case 97: /* lista_expressoes: lista_expressoes '^' expressao  */
 #line 270 "parser.y"
-                                                 { (yyval.no)=create_node((yyvsp[-1].valor_lexico),LISTA_EXP); add_child(&(yyval.no),&(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); }
+                                                 { (yyval.no)=create_node((yyvsp[-1].valor_lexico),LISTA_EXP); add_child(&(yyval.no),&(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no));}
 #line 2100 "parser.tab.c"
     break;
 
   case 98: /* lista_expressoes: expressao  */
 #line 270 "parser.y"
-                                                                                                                                        { (yyval.no) = (yyvsp[0].no); }
+                                                                                                                                       { (yyval.no) = (yyvsp[0].no); }
 #line 2106 "parser.tab.c"
     break;
 

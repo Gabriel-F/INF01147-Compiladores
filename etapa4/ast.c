@@ -340,3 +340,7 @@ void printLabels(void * node){
     }*/
 }
 
+bool isInteger(ASTNODE * root){
+    return root->dataType == INT_TYPE;
+}
+
