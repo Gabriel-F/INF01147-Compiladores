@@ -1,0 +1,17 @@
+// A partir de float e int, inferese float.
+// A partir de bool e int, infere-se int. 
+// A partir de bool e float, infere-se float. 
+
+
+int main(){
+	int i;
+	float f;
+	bool  b;
+
+	//i = f;
+	//f = i; //?
+	//i = b;
+	//b = i;//?
+	//f = b;
+	b = f; //?
+}

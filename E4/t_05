@@ -1,0 +1,13 @@
+//err_function
+
+//caso o identificador dito função seja utilizado como variável ou arranjo, deve-se
+//lançar o erro ERR_FUNCTION.
+
+int foo(){}
+
+int main(){
+	//foo[1] = a;
+
+	int b;
+	b = foo + 1;
+}

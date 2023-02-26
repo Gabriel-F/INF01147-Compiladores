@@ -1,0 +1,11 @@
+//A partir de int e int, infere-se int
+//A partir de float e float, infere-se float
+//A partir de bool e bool, infere-se bool
+
+
+int main(){
+	int a, b;
+	//float a, b;
+	//bool a, b;
+	a = b;
+}

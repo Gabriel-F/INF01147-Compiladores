@@ -1,0 +1,11 @@
+//O tipo de dado de um comando de retorno é o tipo do valor de
+// retorno.
+
+int main(){
+	int i;
+	float f;
+	bool b;
+	return i;
+	//return f;
+	//return b;
+}

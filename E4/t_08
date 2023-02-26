@@ -1,0 +1,12 @@
+//err_char_to_bool
+
+//Lançar o erro ERR_CHAR_TO_BOOL quando
+//deve ser convertida implicitamente para o tipo bool
+
+int main(){
+
+    char c <= 'c';
+    bool a;
+    //bool b <= 'c';
+    a = c;
+}

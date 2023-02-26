@@ -1,0 +1,10 @@
+//float to bool
+//bool to float
+
+int main(){
+	float f <= 1.09;
+	bool b <= true;
+
+	//b = f;
+	f = b;
+}

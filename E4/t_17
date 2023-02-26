@@ -1,0 +1,15 @@
+//O tipo de dado de uma chamada
+//de função é o tipo da função sendo chamada.
+
+int i(){}
+float f(){}
+bool b(){}
+
+int main(){
+    int a;
+    a = f();
+    float g;
+    g = i();
+    bool t;
+    t = b();
+}

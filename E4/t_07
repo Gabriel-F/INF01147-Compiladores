@@ -1,0 +1,15 @@
+//err_char_to_float
+
+//Lançar o erro ERR_CHAR_TO_FLOAT
+//quando deve ser convertida implicitamente para o tipo
+//float.
+
+int main(){
+
+	char c <= 'c';
+	float a;
+
+	//float b <= 'c';
+
+	a = c;
+}

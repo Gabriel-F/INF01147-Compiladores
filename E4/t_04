@@ -1,0 +1,14 @@
+//err_array
+
+//Caso o identificador de um arranjo
+//seja usado como variável ou função, deve-se lançar o
+//erro ERR_ARRAY
+
+int a[2^2];
+
+int main(){
+	//a = 2;
+
+	int b;
+	b = a();
+}

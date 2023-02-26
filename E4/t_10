@@ -1,0 +1,17 @@
+//err_x_to_char
+
+//Por também não haver coerção para o tipo char, em situações onde uma variável ou operador do tipo int,
+//float e bool se encontrar obrigado a ser convertido implicitamente para char, deve-se emitir o erro
+//ERR_X_TO_CHAR.
+
+int arr[2];
+
+int main(){
+	//char f <= 1.09;
+	//char i <= 1;
+	//char b <= true;
+
+	char c;
+
+	c = arr[1];
+}

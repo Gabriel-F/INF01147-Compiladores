@@ -1,0 +1,13 @@
+//err_variable
+
+// Caso o identificador dito variável seja usado
+// como arranjo ou como função, deve-se lançar o erro
+// ERR_VARIABLE
+
+int a;
+
+int main(){
+	a[1] = 1;
+	int b;
+	b = a();
+}

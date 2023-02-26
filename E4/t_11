@@ -1,0 +1,10 @@
+// int to float
+// float to int
+
+int main(){
+	int i <= 1;
+	float f <= 1.09;
+
+	f = i;
+	//i = f;
+}

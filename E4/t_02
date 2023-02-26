@@ -1,0 +1,23 @@
+//err_declared
+
+int b;
+
+int a;
+
+int main(){
+	int a;
+
+//	int a;
+}
+int foo(){
+	{
+		int a;
+	
+//		int a;
+	};
+}
+
+
+int main(){}
+
+int a;

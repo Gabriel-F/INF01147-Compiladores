@@ -1,0 +1,11 @@
+//err_char_vector
+
+//Arranjos não podem ser do tipo char. Assim, o erro
+//ERR_CHAR_VECTOR deve ser lançado caso um arranjo
+//tenha sido declarado com o tipo char
+
+char arr[2];
+
+int main(){
+	
+}

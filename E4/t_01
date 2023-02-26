@@ -1,0 +1,12 @@
+//err_undecleared
+//int a;
+
+int main() {
+	
+	//int a <= 4;
+
+    if ( 3 < a ) then {
+		int b <= 0;
+	};
+}
+

@@ -1,0 +1,16 @@
+//err_char_to_int
+
+//Não há coerção de variáveis de e para o tipo char. Assim, compilador deve
+//lançar o erro ERR_CHAR_TO_INT quando uma variável do tipo char deve ser convertida implicitamente
+//para o tipo int.
+
+
+int main(){
+	
+
+	char c <= 'c';
+	int a;
+	//int b <= 'c';
+
+	a = c;
+}
