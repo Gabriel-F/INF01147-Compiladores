@@ -1,5 +1,6 @@
 #include "stack.h"
 
+
 int table_compare(const void *a, const void *b, void *udata) {
     const TNODE *ua = (TNODE *)a;
     const TNODE *ub = (TNODE *)b;
@@ -189,4 +190,27 @@ int getType(STACK *st, VALOR_T identifier){
     TNODE * tnode = find(st, identifier.input);
 
     return tnode->type;
+}
+
+TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * arr){
+    printf("array size: %d\n",arr->size);
+    int totalSize = 1;
+    for(int i=0;i<arr->size-1;i++){
+        printf("i: %d = %d \n",i,arr->array[i]);
+        totalSize *= arr->array[i];
+    }
+
+    printf("sizeofarray: %d\n" , totalSize);
+
+    TNODE * tNode = (TNODE*)malloc(sizeof(TNODE));
+    
+    tNode->category = category;
+    tNode->line = lexical_value.lineNumber;
+    tNode->lexical_value = lexical_value;
+    tNode->type = type;
+    tNode->size = totalSize;
+
+    freeArray(arr);
+    printf("item created.\n");
+    return tNode;
 }

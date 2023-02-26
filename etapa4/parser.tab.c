@@ -85,8 +85,10 @@ extern int get_line_number();
 extern void *stack;
 int currType = 0;
 
+extern Array arr;
 
-#line 90 "parser.tab.c"
+
+#line 92 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -594,16 +596,16 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   121,   121,   122,   124,   125,   126,   127,   140,   141,
-     142,   143,   145,   147,   148,   149,   150,   152,   153,   154,
-     155,   156,   166,   167,   167,   168,   168,   169,   169,   170,
-     172,   174,   174,   175,   175,   190,   192,   193,   194,   195,
-     196,   197,   198,   200,   201,   202,   203,   204,   209,   211,
-     211,   213,   213,   215,   217,   217,   218,   218,   219,   221,
-     222,   224,   226,   228,   237,   238,   238,   240,   240,   242,
-     242,   242,   244,   245,   246,   247,   248,   250,   250,   250,
-     252,   252,   252,   252,   254,   254,   254,   256,   256,   256,
-     258,   258,   260,   260,   260,   262,   262,   268,   268
+       0,   123,   123,   124,   126,   127,   128,   129,   142,   143,
+     144,   145,   147,   149,   150,   151,   152,   154,   155,   156,
+     157,   158,   168,   169,   169,   170,   170,   171,   171,   172,
+     174,   176,   176,   177,   177,   192,   194,   195,   196,   197,
+     198,   199,   200,   202,   203,   204,   205,   206,   211,   213,
+     213,   215,   215,   217,   219,   219,   220,   220,   221,   223,
+     224,   226,   228,   230,   239,   240,   240,   242,   242,   244,
+     244,   244,   246,   247,   248,   249,   250,   252,   252,   252,
+     254,   254,   254,   254,   256,   256,   256,   258,   258,   258,
+     260,   260,   262,   262,   262,   264,   264,   270,   270
 };
 #endif
 
@@ -1546,559 +1548,565 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* programa: lista_de_elementos  */
-#line 121 "parser.y"
+#line 123 "parser.y"
                              { arvore = (yyval.no);  pop(stack); }
-#line 1552 "parser.tab.c"
+#line 1554 "parser.tab.c"
     break;
 
   case 3: /* programa: %empty  */
-#line 122 "parser.y"
+#line 124 "parser.y"
           { (yyval.no) = 0; }
-#line 1558 "parser.tab.c"
+#line 1560 "parser.tab.c"
     break;
 
   case 4: /* lista_de_elementos: lista_de_elementos declaracao_funcao  */
-#line 124 "parser.y"
+#line 126 "parser.y"
                                                          { if((yyvsp[-1].no) == 0){ (yyval.no) = (yyvsp[0].no);} else {(yyval.no) = (yyvsp[-1].no); add_child(&(yyval.no), &(yyvsp[0].no));} }
-#line 1564 "parser.tab.c"
+#line 1566 "parser.tab.c"
     break;
 
   case 5: /* lista_de_elementos: lista_de_elementos declaracao_var_global  */
-#line 125 "parser.y"
+#line 127 "parser.y"
                                                              { (yyval.no) = (yyvsp[-1].no); }
-#line 1570 "parser.tab.c"
+#line 1572 "parser.tab.c"
     break;
 
   case 6: /* lista_de_elementos: declaracao_funcao  */
-#line 126 "parser.y"
+#line 128 "parser.y"
                                       { (yyval.no) = (yyvsp[0].no); }
-#line 1576 "parser.tab.c"
+#line 1578 "parser.tab.c"
     break;
 
   case 7: /* lista_de_elementos: declaracao_var_global  */
-#line 127 "parser.y"
+#line 129 "parser.y"
                                           { }
-#line 1582 "parser.tab.c"
+#line 1584 "parser.tab.c"
     break;
 
   case 8: /* tipo: TK_PR_INT  */
-#line 140 "parser.y"
+#line 142 "parser.y"
                   { (yyval.no) = 0; currType = INT_TYPE;}
-#line 1588 "parser.tab.c"
+#line 1590 "parser.tab.c"
     break;
 
   case 9: /* tipo: TK_PR_FLOAT  */
-#line 141 "parser.y"
+#line 143 "parser.y"
                   { (yyval.no) = 0; currType = FLOAT_TYPE;}
-#line 1594 "parser.tab.c"
+#line 1596 "parser.tab.c"
     break;
 
   case 10: /* tipo: TK_PR_BOOL  */
-#line 142 "parser.y"
+#line 144 "parser.y"
                   { (yyval.no) = 0; currType = BOOL_TYPE;}
-#line 1600 "parser.tab.c"
+#line 1602 "parser.tab.c"
     break;
 
   case 11: /* tipo: TK_PR_CHAR  */
-#line 143 "parser.y"
+#line 145 "parser.y"
                   { (yyval.no) = 0; currType = CHAR_TYPE;}
-#line 1606 "parser.tab.c"
+#line 1608 "parser.tab.c"
     break;
 
   case 12: /* identificador: TK_IDENTIFICADOR  */
-#line 145 "parser.y"
+#line 147 "parser.y"
                                  {if(isDecl(stack,*(yyvsp[0].valor_lexico))) { printErrorDecl(*(yyvsp[0].valor_lexico),find(stack,(yyvsp[0].valor_lexico)->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*(yyvsp[0].valor_lexico))); (yyval.no) = create_leaf((yyvsp[0].valor_lexico),IDENTIFICADOR, currType); }
-#line 1612 "parser.tab.c"
+#line 1614 "parser.tab.c"
+    break;
+
+  case 13: /* lista_dimensional_inteiro: TK_LIT_INT  */
+#line 149 "parser.y"
+                                      {insertArray(&arr,atoi((yyvsp[0].valor_lexico)->input));}
+#line 1620 "parser.tab.c"
     break;
 
   case 16: /* var_multidimensional: TK_IDENTIFICADOR '[' lista_dimensional ']'  */
-#line 150 "parser.y"
-                                                                 { if(isDecl(stack,*(yyvsp[-3].valor_lexico))) { printErrorDecl(*(yyvsp[-3].valor_lexico),find(stack,(yyvsp[-3].valor_lexico)->input));} addItem(stack, createItem(ARRAY,currType,*(yyvsp[-3].valor_lexico))); if(!checkUse(stack,*(yyvsp[-3].valor_lexico), ARRAY)){ return printErrorUse(*(yyvsp[-3].valor_lexico),ARRAY, find(stack,(yyvsp[-3].valor_lexico)->input)); } deleteValue((yyvsp[-3].valor_lexico)); }
-#line 1618 "parser.tab.c"
+#line 152 "parser.y"
+                                                                 { if(isDecl(stack,*(yyvsp[-3].valor_lexico))) { printErrorDecl(*(yyvsp[-3].valor_lexico),find(stack,(yyvsp[-3].valor_lexico)->input));} addItem(stack, createItemArray(ARRAY,currType,*(yyvsp[-3].valor_lexico),&arr)); if(!checkUse(stack,*(yyvsp[-3].valor_lexico), ARRAY)){ return printErrorUse(*(yyvsp[-3].valor_lexico),ARRAY, find(stack,(yyvsp[-3].valor_lexico)->input)); }   deleteValue((yyvsp[-3].valor_lexico)); }
+#line 1626 "parser.tab.c"
     break;
 
   case 17: /* declaracao_var_global: tipo lista_de_identificadores ';'  */
-#line 152 "parser.y"
+#line 154 "parser.y"
                                                          { (yyval.no) = 0;}
-#line 1624 "parser.tab.c"
+#line 1632 "parser.tab.c"
     break;
 
   case 18: /* lista_de_identificadores: TK_IDENTIFICADOR  */
-#line 153 "parser.y"
+#line 155 "parser.y"
                                            { if(isDecl(stack,*(yyvsp[0].valor_lexico))) { printErrorDecl(*(yyvsp[0].valor_lexico),find(stack,(yyvsp[0].valor_lexico)->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*(yyvsp[0].valor_lexico))); deleteValue((yyvsp[0].valor_lexico)); }
-#line 1630 "parser.tab.c"
+#line 1638 "parser.tab.c"
     break;
 
   case 20: /* lista_de_identificadores: lista_de_identificadores ',' TK_IDENTIFICADOR  */
-#line 155 "parser.y"
+#line 157 "parser.y"
                                                                         { if(isDecl(stack,*(yyvsp[0].valor_lexico))) { printErrorDecl(*(yyvsp[0].valor_lexico),find(stack,(yyvsp[0].valor_lexico)->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*(yyvsp[0].valor_lexico))); deleteValue((yyvsp[0].valor_lexico));}
-#line 1636 "parser.tab.c"
+#line 1644 "parser.tab.c"
     break;
 
   case 22: /* declaracao_funcao: cabecalho corpo  */
-#line 166 "parser.y"
+#line 168 "parser.y"
                                     { (yyval.no) = create_node((yyvsp[-1].valor_lexico), IDENTIFICADOR); add_child(&(yyval.no), &(yyvsp[0].no)); }
-#line 1642 "parser.tab.c"
+#line 1650 "parser.tab.c"
     break;
 
   case 23: /* $@1: %empty  */
-#line 167 "parser.y"
+#line 169 "parser.y"
                                  { if(isDecl(stack,*(yyvsp[0].valor_lexico))) { printErrorDecl(*(yyvsp[0].valor_lexico),find(stack,(yyvsp[0].valor_lexico)->input)); return ERR_DECLARED;} addItem(stack, createItem(FUNCTION,currType,*(yyvsp[0].valor_lexico))); push(stack); }
-#line 1648 "parser.tab.c"
+#line 1656 "parser.tab.c"
     break;
 
   case 24: /* cabecalho: tipo TK_IDENTIFICADOR $@1 '(' lista_parametros ')'  */
-#line 167 "parser.y"
+#line 169 "parser.y"
                                                                                                                                                                                                                       { (yyval.valor_lexico) = (yyvsp[-4].valor_lexico); }
-#line 1654 "parser.tab.c"
+#line 1662 "parser.tab.c"
     break;
 
   case 25: /* lista_parametros: parametros_entrada  */
-#line 168 "parser.y"
+#line 170 "parser.y"
                                      { (yyval.no) = 0; }
-#line 1660 "parser.tab.c"
+#line 1668 "parser.tab.c"
     break;
 
   case 26: /* lista_parametros: %empty  */
-#line 168 "parser.y"
+#line 170 "parser.y"
                                                    { (yyval.no) = 0;}
-#line 1666 "parser.tab.c"
+#line 1674 "parser.tab.c"
     break;
 
   case 27: /* parametros_entrada: parametros_entrada ',' parametro  */
-#line 169 "parser.y"
+#line 171 "parser.y"
                                                      { (yyval.no) = 0; }
-#line 1672 "parser.tab.c"
+#line 1680 "parser.tab.c"
     break;
 
   case 28: /* parametros_entrada: parametro  */
-#line 169 "parser.y"
+#line 171 "parser.y"
                                                                              { (yyval.no) = 0; }
-#line 1678 "parser.tab.c"
+#line 1686 "parser.tab.c"
     break;
 
   case 29: /* parametro: tipo TK_IDENTIFICADOR  */
-#line 170 "parser.y"
+#line 172 "parser.y"
                                  { if(isDecl(stack,*(yyvsp[0].valor_lexico))) { printErrorDecl(*(yyvsp[0].valor_lexico),find(stack,(yyvsp[0].valor_lexico)->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*(yyvsp[0].valor_lexico))); (yyval.no) = 0; deleteValue((yyvsp[0].valor_lexico));}
-#line 1684 "parser.tab.c"
+#line 1692 "parser.tab.c"
     break;
 
   case 30: /* corpo: bloco_comandos  */
-#line 172 "parser.y"
+#line 174 "parser.y"
                        { (yyval.no) = (yyvsp[0].no); pop(stack); }
-#line 1690 "parser.tab.c"
+#line 1698 "parser.tab.c"
     break;
 
   case 31: /* bloco_comandos: '{' lista_comandos '}'  */
-#line 174 "parser.y"
+#line 176 "parser.y"
                                          { (yyval.no) = (yyvsp[-1].no); }
-#line 1696 "parser.tab.c"
+#line 1704 "parser.tab.c"
     break;
 
   case 32: /* bloco_comandos: '{' '}'  */
-#line 174 "parser.y"
+#line 176 "parser.y"
                                                                 {  (yyval.no) = 0; }
-#line 1702 "parser.tab.c"
+#line 1710 "parser.tab.c"
     break;
 
   case 33: /* lista_comandos: lista_comandos comando ';'  */
-#line 175 "parser.y"
+#line 177 "parser.y"
                                             { if((yyvsp[-2].no) == 0){ (yyval.no) = (yyvsp[-1].no);} else {(yyval.no) = (yyvsp[-2].no); add_child(&(yyval.no), &(yyvsp[-1].no));} }
-#line 1708 "parser.tab.c"
+#line 1716 "parser.tab.c"
     break;
 
   case 34: /* lista_comandos: comando ';'  */
-#line 175 "parser.y"
+#line 177 "parser.y"
                                                                                                                            { (yyval.no) = (yyvsp[-1].no); }
-#line 1714 "parser.tab.c"
+#line 1722 "parser.tab.c"
     break;
 
   case 35: /* push_stack: %empty  */
-#line 190 "parser.y"
+#line 192 "parser.y"
             { push(stack); }
-#line 1720 "parser.tab.c"
+#line 1728 "parser.tab.c"
     break;
 
   case 36: /* comando: declaracao_var_local  */
-#line 192 "parser.y"
+#line 194 "parser.y"
                               { (yyval.no) = (yyvsp[0].no);}
-#line 1726 "parser.tab.c"
+#line 1734 "parser.tab.c"
     break;
 
   case 37: /* comando: atribuicao  */
-#line 193 "parser.y"
+#line 195 "parser.y"
                     { (yyval.no) = (yyvsp[0].no);}
-#line 1732 "parser.tab.c"
+#line 1740 "parser.tab.c"
     break;
 
   case 38: /* comando: retorno  */
-#line 194 "parser.y"
+#line 196 "parser.y"
                  { (yyval.no) = (yyvsp[0].no);}
-#line 1738 "parser.tab.c"
+#line 1746 "parser.tab.c"
     break;
 
   case 39: /* comando: push_stack bloco_comandos  */
-#line 195 "parser.y"
+#line 197 "parser.y"
                                    { (yyval.no) = (yyvsp[-1].no);}
-#line 1744 "parser.tab.c"
+#line 1752 "parser.tab.c"
     break;
 
   case 40: /* comando: chamada_funcao  */
-#line 196 "parser.y"
+#line 198 "parser.y"
                         { (yyval.no) = (yyvsp[0].no);}
-#line 1750 "parser.tab.c"
+#line 1758 "parser.tab.c"
     break;
 
   case 41: /* comando: controle_fluxo  */
-#line 197 "parser.y"
+#line 199 "parser.y"
                         { (yyval.no) = (yyvsp[0].no);}
-#line 1756 "parser.tab.c"
+#line 1764 "parser.tab.c"
     break;
 
   case 42: /* comando: controle_fluxo_while  */
-#line 198 "parser.y"
+#line 200 "parser.y"
                               { (yyval.no) = (yyvsp[0].no);}
-#line 1762 "parser.tab.c"
+#line 1770 "parser.tab.c"
     break;
 
   case 43: /* literal: TK_LIT_INT  */
-#line 200 "parser.y"
+#line 202 "parser.y"
                       { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_INT, INT_TYPE); addItem(stack, createItem(LITERAL,INT_TYPE,*(yyvsp[0].valor_lexico))); }
-#line 1768 "parser.tab.c"
+#line 1776 "parser.tab.c"
     break;
 
   case 44: /* literal: TK_LIT_CHAR  */
-#line 201 "parser.y"
+#line 203 "parser.y"
                       { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_CHAR, CHAR_TYPE); addItem(stack, createItem(LITERAL,CHAR_TYPE,*(yyvsp[0].valor_lexico)));}
-#line 1774 "parser.tab.c"
+#line 1782 "parser.tab.c"
     break;
 
   case 45: /* literal: TK_LIT_FALSE  */
-#line 202 "parser.y"
+#line 204 "parser.y"
                       { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_BOOL, BOOL_TYPE); addItem(stack, createItem(LITERAL,BOOL_TYPE,*(yyvsp[0].valor_lexico)));}
-#line 1780 "parser.tab.c"
+#line 1788 "parser.tab.c"
     break;
 
   case 46: /* literal: TK_LIT_TRUE  */
-#line 203 "parser.y"
+#line 205 "parser.y"
                       { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_BOOL, BOOL_TYPE); addItem(stack, createItem(LITERAL,BOOL_TYPE,*(yyvsp[0].valor_lexico)));}
-#line 1786 "parser.tab.c"
+#line 1794 "parser.tab.c"
     break;
 
   case 47: /* literal: TK_LIT_FLOAT  */
-#line 204 "parser.y"
+#line 206 "parser.y"
                       { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_FLOAT, FLOAT_TYPE); addItem(stack, createItem(LITERAL,FLOAT_TYPE,*(yyvsp[0].valor_lexico)));}
-#line 1792 "parser.tab.c"
+#line 1800 "parser.tab.c"
     break;
 
   case 48: /* declaracao_var_local: tipo lista_de_identificadores_local  */
-#line 209 "parser.y"
+#line 211 "parser.y"
                                                           { (yyval.no) = (yyvsp[0].no); }
-#line 1798 "parser.tab.c"
+#line 1806 "parser.tab.c"
     break;
 
   case 49: /* identificador_local: TK_IDENTIFICADOR  */
-#line 211 "parser.y"
+#line 213 "parser.y"
                                       { if(isDecl(stack,*(yyvsp[0].valor_lexico))) { printErrorDecl(*(yyvsp[0].valor_lexico),find(stack,(yyvsp[0].valor_lexico)->input)); return ERR_DECLARED;} addItem(stack, createItem(VARIABLE,currType,*(yyvsp[0].valor_lexico))); (yyval.no)=0; deleteValue((yyvsp[0].valor_lexico)); }
-#line 1804 "parser.tab.c"
+#line 1812 "parser.tab.c"
     break;
 
   case 50: /* identificador_local: identificador TK_OC_LE literal  */
-#line 211 "parser.y"
+#line 213 "parser.y"
                                                                                                                                                                                                                                               { (yyval.no) = create_node((yyvsp[-1].valor_lexico), INIC_VAR); add_child(&(yyval.no),&(yyvsp[-2].no)); add_child(&(yyval.no),&(yyvsp[0].no)); int ret = doCoercion((yyval.no),INIC_VAR); if(ret != 0) return ret; }
-#line 1810 "parser.tab.c"
+#line 1818 "parser.tab.c"
     break;
 
   case 51: /* lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local  */
-#line 213 "parser.y"
+#line 215 "parser.y"
                                                                                        { if((yyvsp[0].no) != 0){(yyval.no) = (yyvsp[0].no); add_child(&(yyval.no), &(yyvsp[-2].no));} }
-#line 1816 "parser.tab.c"
+#line 1824 "parser.tab.c"
     break;
 
   case 52: /* lista_de_identificadores_local: identificador_local  */
-#line 213 "parser.y"
+#line 215 "parser.y"
                                                                                                                                                             { (yyval.no) = (yyvsp[0].no); }
-#line 1822 "parser.tab.c"
+#line 1830 "parser.tab.c"
     break;
 
   case 53: /* atribuicao: identificador_expressao '=' expressao  */
-#line 215 "parser.y"
+#line 217 "parser.y"
                                                   {(yyval.no) = create_node((yyvsp[-1].valor_lexico), ATRIBUICAO); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no),&(yyvsp[0].no)); int ret = doCoercion((yyval.no),ATRIBUICAO); if(ret != 0) return ret; }
-#line 1828 "parser.tab.c"
+#line 1836 "parser.tab.c"
     break;
 
   case 54: /* lista_argumentos: argumentos_entrada  */
-#line 217 "parser.y"
+#line 219 "parser.y"
                                      { (yyval.no) = (yyvsp[0].no); }
-#line 1834 "parser.tab.c"
+#line 1842 "parser.tab.c"
     break;
 
   case 55: /* lista_argumentos: %empty  */
-#line 217 "parser.y"
+#line 219 "parser.y"
                                                     { (yyval.no) = 0; }
-#line 1840 "parser.tab.c"
+#line 1848 "parser.tab.c"
     break;
 
   case 56: /* argumentos_entrada: argumentos_entrada ',' argumento  */
-#line 218 "parser.y"
+#line 220 "parser.y"
                                                      { (yyval.no) = (yyvsp[-2].no); add_child(&(yyval.no), &(yyvsp[0].no)); }
-#line 1846 "parser.tab.c"
+#line 1854 "parser.tab.c"
     break;
 
   case 57: /* argumentos_entrada: argumento  */
-#line 218 "parser.y"
+#line 220 "parser.y"
                                                                                                    { (yyval.no) = (yyvsp[0].no); }
-#line 1852 "parser.tab.c"
+#line 1860 "parser.tab.c"
     break;
 
   case 58: /* argumento: expressao  */
-#line 219 "parser.y"
+#line 221 "parser.y"
                      { (yyval.no) = (yyvsp[0].no); }
-#line 1858 "parser.tab.c"
+#line 1866 "parser.tab.c"
     break;
 
   case 59: /* controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos  */
-#line 221 "parser.y"
+#line 223 "parser.y"
                                                                                  { (yyval.no) = create_node((yyvsp[-6].valor_lexico), IF); add_child(&(yyval.no),&(yyvsp[-4].no)); add_child(&(yyval.no),&(yyvsp[0].no)); int ret = doCoercion((yyval.no),IF); if(ret != 0) return ret;  }
-#line 1864 "parser.tab.c"
+#line 1872 "parser.tab.c"
     break;
 
   case 60: /* controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos TK_PR_ELSE push_stack bloco_comandos  */
-#line 222 "parser.y"
+#line 224 "parser.y"
                                                                                                                      { (yyval.no) = create_node((yyvsp[-9].valor_lexico), IF_ELSE); add_child(&(yyval.no),&(yyvsp[-7].no)); add_child(&(yyval.no),&(yyvsp[-3].no)); add_child(&(yyval.no),&(yyvsp[0].no)); int ret = doCoercion((yyval.no),IF_ELSE); if(ret != 0) return ret; }
-#line 1870 "parser.tab.c"
+#line 1878 "parser.tab.c"
     break;
 
   case 61: /* controle_fluxo_while: TK_PR_WHILE '(' expressao ')' bloco_comandos  */
-#line 224 "parser.y"
+#line 226 "parser.y"
                                                                    { (yyval.no) = create_node((yyvsp[-4].valor_lexico), WHILE); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),WHILE); if(ret != 0) return ret;}
-#line 1876 "parser.tab.c"
+#line 1884 "parser.tab.c"
     break;
 
   case 62: /* retorno: TK_PR_RETURN expressao  */
-#line 226 "parser.y"
+#line 228 "parser.y"
                                 { (yyval.no) = create_node( (yyvsp[-1].valor_lexico), RETURN); add_child(&(yyval.no),&(yyvsp[0].no)); int ret = doCoercion((yyval.no),UN_OP); if(ret != 0) return ret; }
-#line 1882 "parser.tab.c"
+#line 1890 "parser.tab.c"
     break;
 
   case 63: /* chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')'  */
-#line 228 "parser.y"
+#line 230 "parser.y"
                                                           {if(isUndecl(stack,*(yyvsp[-3].valor_lexico))) { printErrorUndecl(*(yyvsp[-3].valor_lexico)); return ERR_UNDECLARED; } if(!checkUse(stack,*(yyvsp[-3].valor_lexico), FUNCTION)){ return printErrorUse(*(yyvsp[-3].valor_lexico),FUNCTION, find(stack,(yyvsp[-3].valor_lexico)->input)); } (yyval.no) = create_node((yyvsp[-3].valor_lexico), CHAMADA_FUNC); add_child(&(yyval.no), &(yyvsp[-1].no)); int ret = doCoercionWithType((yyval.no),CHAMADA_FUNC,getType(stack,*(yyvsp[-3].valor_lexico))); if(ret != 0) return ret; }
-#line 1888 "parser.tab.c"
+#line 1896 "parser.tab.c"
     break;
 
   case 64: /* expressao: E  */
-#line 237 "parser.y"
+#line 239 "parser.y"
              { (yyval.no) = (yyvsp[0].no);}
-#line 1894 "parser.tab.c"
+#line 1902 "parser.tab.c"
     break;
 
   case 65: /* E: E TK_OC_OR T  */
-#line 238 "parser.y"
+#line 240 "parser.y"
                 { (yyval.no) = create_node((yyvsp[-1].valor_lexico), EXP_OR); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1900 "parser.tab.c"
+#line 1908 "parser.tab.c"
     break;
 
   case 66: /* E: T  */
-#line 238 "parser.y"
+#line 240 "parser.y"
                                                                                                                                                            { (yyval.no) = (yyvsp[0].no); }
-#line 1906 "parser.tab.c"
+#line 1914 "parser.tab.c"
     break;
 
   case 67: /* T: T TK_OC_AND F  */
-#line 240 "parser.y"
+#line 242 "parser.y"
                  { (yyval.no) = create_node((yyvsp[-1].valor_lexico), EXP_AND); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1912 "parser.tab.c"
+#line 1920 "parser.tab.c"
     break;
 
   case 68: /* T: F  */
-#line 240 "parser.y"
+#line 242 "parser.y"
                                                                                                                                                             { (yyval.no) = (yyvsp[0].no); }
-#line 1918 "parser.tab.c"
+#line 1926 "parser.tab.c"
     break;
 
   case 69: /* F: F TK_OC_EQ G  */
-#line 242 "parser.y"
+#line 244 "parser.y"
                 { (yyval.no) = create_node((yyvsp[-1].valor_lexico), EXP_EQ); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1924 "parser.tab.c"
+#line 1932 "parser.tab.c"
     break;
 
   case 70: /* F: F TK_OC_NE G  */
-#line 242 "parser.y"
+#line 244 "parser.y"
                                                                                                                                                                       { (yyval.no) = create_node((yyvsp[-1].valor_lexico), EXP_NE); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1930 "parser.tab.c"
+#line 1938 "parser.tab.c"
     break;
 
   case 71: /* F: G  */
-#line 242 "parser.y"
+#line 244 "parser.y"
                                                                                                                                                                                                                                                                                                                 { (yyval.no) = (yyvsp[0].no); }
-#line 1936 "parser.tab.c"
+#line 1944 "parser.tab.c"
     break;
 
   case 72: /* G: G TK_OC_GE H  */
-#line 244 "parser.y"
+#line 246 "parser.y"
                 { (yyval.no) = create_node((yyvsp[-1].valor_lexico), EXP_GE); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no),&(yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1942 "parser.tab.c"
+#line 1950 "parser.tab.c"
     break;
 
   case 73: /* G: G TK_OC_LE H  */
-#line 245 "parser.y"
+#line 247 "parser.y"
                 { (yyval.no) = create_node((yyvsp[-1].valor_lexico), EXP_LE); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1948 "parser.tab.c"
+#line 1956 "parser.tab.c"
     break;
 
   case 74: /* G: G '<' H  */
-#line 246 "parser.y"
+#line 248 "parser.y"
            { (yyval.no) = create_node((yyvsp[-1].valor_lexico), EXP_LT); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1954 "parser.tab.c"
+#line 1962 "parser.tab.c"
     break;
 
   case 75: /* G: G '>' H  */
-#line 247 "parser.y"
+#line 249 "parser.y"
            { (yyval.no) = create_node((yyvsp[-1].valor_lexico), EXP_GT); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1960 "parser.tab.c"
+#line 1968 "parser.tab.c"
     break;
 
   case 76: /* G: H  */
-#line 248 "parser.y"
+#line 250 "parser.y"
      { (yyval.no) = (yyvsp[0].no); }
-#line 1966 "parser.tab.c"
+#line 1974 "parser.tab.c"
     break;
 
   case 77: /* H: H '+' I  */
-#line 250 "parser.y"
+#line 252 "parser.y"
            { (yyval.no) = create_node((yyvsp[-1].valor_lexico), BIN_PLUS); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1972 "parser.tab.c"
+#line 1980 "parser.tab.c"
     break;
 
   case 78: /* H: H '-' I  */
-#line 250 "parser.y"
+#line 252 "parser.y"
                                                                                                                                                              { (yyval.no) = create_node((yyvsp[-1].valor_lexico), BIN_MINUS); add_child(&(yyval.no), &(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1978 "parser.tab.c"
+#line 1986 "parser.tab.c"
     break;
 
   case 79: /* H: I  */
-#line 250 "parser.y"
+#line 252 "parser.y"
                                                                                                                                                                                                                                                                                                           { (yyval.no) = (yyvsp[0].no); }
-#line 1984 "parser.tab.c"
+#line 1992 "parser.tab.c"
     break;
 
   case 80: /* I: I '%' J  */
-#line 252 "parser.y"
+#line 254 "parser.y"
            { (yyval.no) = create_node((yyvsp[-1].valor_lexico), BIN_PERCENT); add_child(& (yyval.no), & (yyvsp[-2].no)); add_child(& (yyval.no), & (yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1990 "parser.tab.c"
+#line 1998 "parser.tab.c"
     break;
 
   case 81: /* I: I '/' J  */
-#line 252 "parser.y"
+#line 254 "parser.y"
                                                                                                                                                                    { (yyval.no) = create_node((yyvsp[-1].valor_lexico), BIN_DIV); add_child(& (yyval.no), & (yyvsp[-2].no)); add_child(& (yyval.no), & (yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 1996 "parser.tab.c"
+#line 2004 "parser.tab.c"
     break;
 
   case 82: /* I: I '*' J  */
-#line 252 "parser.y"
+#line 254 "parser.y"
                                                                                                                                                                                                                                                                                                                         { (yyval.no) = create_node((yyvsp[-1].valor_lexico), BIN_MULT); add_child(& (yyval.no), & (yyvsp[-2].no)); add_child(& (yyval.no), & (yyvsp[0].no)); int ret = doCoercion((yyval.no),BIN_OP); if(ret != 0) return ret; }
-#line 2002 "parser.tab.c"
+#line 2010 "parser.tab.c"
     break;
 
   case 83: /* I: J  */
-#line 252 "parser.y"
+#line 254 "parser.y"
                                                                                                                                                                                                                                                                                                                                                                                                                                                                        { (yyval.no) = (yyvsp[0].no); }
-#line 2008 "parser.tab.c"
+#line 2016 "parser.tab.c"
     break;
 
   case 84: /* J: '-' K  */
-#line 254 "parser.y"
+#line 256 "parser.y"
          { (yyval.no) = create_node((yyvsp[-1].valor_lexico), UN_MINUS); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),UN_OP); if(ret != 0) return ret; }
-#line 2014 "parser.tab.c"
+#line 2022 "parser.tab.c"
     break;
 
   case 85: /* J: '!' K  */
-#line 254 "parser.y"
+#line 256 "parser.y"
                                                                                                                                    { (yyval.no) = create_node((yyvsp[-1].valor_lexico), UN_NEG); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),UN_OP); if(ret != 0) return ret; }
-#line 2020 "parser.tab.c"
+#line 2028 "parser.tab.c"
     break;
 
   case 86: /* J: L  */
-#line 254 "parser.y"
+#line 256 "parser.y"
                                                                                                                                                                                                                                                        { (yyval.no) = (yyvsp[0].no); }
-#line 2026 "parser.tab.c"
+#line 2034 "parser.tab.c"
     break;
 
   case 87: /* K: '-' K  */
-#line 256 "parser.y"
+#line 258 "parser.y"
          { (yyval.no) = create_node((yyvsp[-1].valor_lexico), UN_MINUS); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),UN_OP); if(ret != 0) return ret; }
-#line 2032 "parser.tab.c"
+#line 2040 "parser.tab.c"
     break;
 
   case 88: /* K: '!' K  */
-#line 256 "parser.y"
+#line 258 "parser.y"
                                                                                                                                    { (yyval.no) = create_node((yyvsp[-1].valor_lexico), UN_NEG); add_child(&(yyval.no), &(yyvsp[0].no)); int ret = doCoercion((yyval.no),UN_OP); if(ret != 0) return ret; }
-#line 2038 "parser.tab.c"
+#line 2046 "parser.tab.c"
     break;
 
   case 89: /* K: L  */
-#line 256 "parser.y"
+#line 258 "parser.y"
                                                                                                                                                                                                                                                        { (yyval.no) = (yyvsp[0].no); }
-#line 2044 "parser.tab.c"
+#line 2052 "parser.tab.c"
     break;
 
   case 90: /* L: '(' E ')'  */
-#line 258 "parser.y"
+#line 260 "parser.y"
              { (yyval.no) = (yyvsp[-1].no); }
-#line 2050 "parser.tab.c"
+#line 2058 "parser.tab.c"
     break;
 
   case 91: /* L: operando  */
-#line 258 "parser.y"
+#line 260 "parser.y"
                                      { (yyval.no) = (yyvsp[0].no); }
-#line 2056 "parser.tab.c"
+#line 2064 "parser.tab.c"
     break;
 
   case 92: /* operando: literal  */
-#line 260 "parser.y"
+#line 262 "parser.y"
                   { (yyval.no) = (yyvsp[0].no); }
-#line 2062 "parser.tab.c"
+#line 2070 "parser.tab.c"
     break;
 
   case 93: /* operando: chamada_funcao  */
-#line 260 "parser.y"
+#line 262 "parser.y"
                                                 { (yyval.no) = (yyvsp[0].no); }
-#line 2068 "parser.tab.c"
+#line 2076 "parser.tab.c"
     break;
 
   case 94: /* operando: identificador_expressao  */
-#line 260 "parser.y"
+#line 262 "parser.y"
                                                                                        { (yyval.no) = (yyvsp[0].no); }
-#line 2074 "parser.tab.c"
+#line 2082 "parser.tab.c"
     break;
 
   case 95: /* identificador_expressao: TK_IDENTIFICADOR  */
-#line 262 "parser.y"
+#line 264 "parser.y"
                                           { if(isUndecl(stack,*(yyvsp[0].valor_lexico))) { printErrorUndecl(*(yyvsp[0].valor_lexico)); return ERR_UNDECLARED; } if(!checkUse(stack,*(yyvsp[0].valor_lexico), VARIABLE)){ return printErrorUse(*(yyvsp[0].valor_lexico),VARIABLE, find(stack,(yyvsp[0].valor_lexico)->input)); } (yyval.no) = create_leaf((yyvsp[0].valor_lexico), IDENTIFICADOR, getType(stack,*(yyvsp[0].valor_lexico))); }
-#line 2080 "parser.tab.c"
+#line 2088 "parser.tab.c"
     break;
 
   case 96: /* identificador_expressao: TK_IDENTIFICADOR '[' lista_expressoes ']'  */
-#line 263 "parser.y"
+#line 265 "parser.y"
 {  if(isUndecl(stack,*(yyvsp[-3].valor_lexico))) { printErrorUndecl(*(yyvsp[-3].valor_lexico)); return ERR_UNDECLARED; } if(!checkUse(stack,*(yyvsp[-3].valor_lexico), ARRAY)){ return printErrorUse(*(yyvsp[-3].valor_lexico),ARRAY, find(stack,(yyvsp[-3].valor_lexico)->input));} (yyval.no) = create_node((yyvsp[-2].valor_lexico), IDENT_EXP); ASTNODE * identLeaf = create_leaf((yyvsp[-3].valor_lexico),IDENTIFICADOR, getType(stack,*(yyvsp[-3].valor_lexico)));  add_child(&(yyval.no),&identLeaf); add_child(&(yyval.no),&(yyvsp[-1].no)); deleteValue((yyvsp[0].valor_lexico)); }
-#line 2086 "parser.tab.c"
+#line 2094 "parser.tab.c"
     break;
 
   case 97: /* lista_expressoes: lista_expressoes '^' expressao  */
-#line 268 "parser.y"
+#line 270 "parser.y"
                                                  { (yyval.no)=create_node((yyvsp[-1].valor_lexico),LISTA_EXP); add_child(&(yyval.no),&(yyvsp[-2].no)); add_child(&(yyval.no), &(yyvsp[0].no)); }
-#line 2092 "parser.tab.c"
+#line 2100 "parser.tab.c"
     break;
 
   case 98: /* lista_expressoes: expressao  */
-#line 268 "parser.y"
+#line 270 "parser.y"
                                                                                                                                         { (yyval.no) = (yyvsp[0].no); }
-#line 2098 "parser.tab.c"
+#line 2106 "parser.tab.c"
     break;
 
 
-#line 2102 "parser.tab.c"
+#line 2110 "parser.tab.c"
 
       default: break;
     }
@@ -2322,7 +2330,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 270 "parser.y"
+#line 272 "parser.y"
 
 
 

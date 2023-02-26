@@ -1,5 +1,6 @@
 int a;
-int arr[24213^21312];
+int arr[2^3^4];
+int array[2^3^5];
 int foo(int a,int b){
 
 	int fa <= 2;
@@ -11,18 +12,14 @@ int func(){
 	return c;
 }
 
+int newArr[5^5^10];
+
 int main(){
 	
 	int a;
 	float b;
 	float c;
-	if(2 + 2 == 3) then {
-		int a <= 2;
-	}else{
-		float b;
-		func = 2;
-
-	};
+	
 }
 
 

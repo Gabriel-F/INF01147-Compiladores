@@ -1,11 +1,10 @@
 #include "hashmap.h"
 #include "ast.h"
+#include "array.h"
 #define LITERAL 1
 #define VARIABLE 2
 #define ARRAY 3
 #define FUNCTION 4
-
-
 
 
 typedef struct stackNode{
@@ -62,3 +61,5 @@ int printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared); //Print and 
 bool checkUse(STACK *st, VALOR_T var, int type); //Checks if it's well used
 
 int getType(STACK * st, VALOR_T identifier);
+
+TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * arr);

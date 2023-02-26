@@ -9,12 +9,14 @@ extern int yylex_destroy(void);
 
 void *arvore = NULL;
 void *stack = NULL;
+Array arr;
 void exporta (void *arvore);
 void libera (void *arvore);
 
 int main (int argc, char **argv)
 {
   stack = initStack();
+  initArray(&arr,1);
   push(stack);
   int ret = yyparse(); 
   exporta (arvore);
