@@ -3,7 +3,7 @@ Repositório para o trabalho de compiladores
 
 # ETAPA 4
 
-- [ ] - Fix problems of E3
+- [X] - Fix problems of E3
 - [X] - Size of array on hashtable
 - [ ] - Test ERR_UNDECLARED
 - [ ] - Test ERR_DECLARED
