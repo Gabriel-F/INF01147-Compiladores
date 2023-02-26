@@ -107,8 +107,6 @@ extern Array arr;
 %type <valor_lexico> cabecalho;
 %token TK_ERRO;
 
-
-
 %%
 
 /* -----------------------------------------------------------------------
@@ -224,7 +222,7 @@ argumento: expressao { $$ = $1; };
 controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos  { $$ = create_node($1, IF); add_child(&$$,&$3); add_child(&$$,&$7); int ret = doCoercion($$,IF); if(ret != 0) return ret;  } | 
                 TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos TK_PR_ELSE push_stack bloco_comandos { $$ = create_node($1, IF_ELSE); add_child(&$$,&$3); add_child(&$$,&$7); add_child(&$$,&$10); int ret = doCoercion($$,IF_ELSE); if(ret != 0) return ret; }; // REVISAR
 
-controle_fluxo_while: TK_PR_WHILE '(' expressao ')' bloco_comandos { $$ = create_node($1, WHILE); add_child(&$$, &$3); add_child(&$$, &$5); int ret = doCoercion($$,WHILE); if(ret != 0) return ret;} ;
+controle_fluxo_while: TK_PR_WHILE '(' expressao ')' push_stack bloco_comandos { $$ = create_node($1, WHILE); add_child(&$$, &$3); add_child(&$$, &$6); int ret = doCoercion($$,WHILE); if(ret != 0) return ret;} ;
 
 retorno: TK_PR_RETURN expressao { $$ = create_node( $1, RETURN); add_child(&$$,&$2); int ret = doCoercion($$,UN_OP); if(ret != 0) return ret; } ;
 
@@ -263,7 +261,7 @@ L: '(' E ')' { $$ = $2; } | operando { $$ = $1; };
 operando: literal { $$ = $1; } | chamada_funcao { $$ = $1; } | identificador_expressao { $$ = $1; };
 
 identificador_expressao: TK_IDENTIFICADOR { if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, VARIABLE)){ return printErrorUse(*$1,VARIABLE, find(stack,$1->input)); } $$ = create_leaf($1, IDENTIFICADOR, getType(stack,*$1)); } | TK_IDENTIFICADOR '[' lista_expressoes ']' 
-{  if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, ARRAY)){ return printErrorUse(*$1,ARRAY, find(stack,$1->input));} $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR, getType(stack,*$1));  add_child(&$$,&identLeaf); add_child(&$$,&$3); deleteValue($4); } ; //Cant pass type here, needs to check the hashtable
+{  if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); return ERR_UNDECLARED; } if(!checkUse(stack,*$1, ARRAY)){ return printErrorUse(*$1,ARRAY, find(stack,$1->input));} $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR, getType(stack,*$1));  add_child(&$$,&identLeaf); add_child(&$$,&$3); doCoercion($$,UN_OP); deleteValue($4); } ; //Cant pass type here, needs to check the hashtable
 
 
 

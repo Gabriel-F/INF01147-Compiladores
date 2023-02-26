@@ -1,13 +1,13 @@
-//err_variable
+//Nos comandos de fluxo de controle, o tipo de dado da atribuição 
+//(e do comando de inicialização de variável local) é o tipo
+//de quem recebe o valor atribuído; o tipo de dado de um
+//if (com else opcional) e de um while é o tipo de dado
+//da expressão de teste
 
-// Caso o identificador dito variável seja usado
-// como arranjo ou como função, deve-se lançar o erro
-// ERR_VARIABLE
-
-int a;
-
+int arr[2];
 int main(){
-    a[1] = 1;
-    int b;
-    b = a();
+	
+	char c;
+
+	c = arr[1];
 }
