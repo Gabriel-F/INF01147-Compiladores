@@ -95,7 +95,7 @@ int doCoercion(ASTNODE *root, int opType){ //opType is the type of the operation
     if(opType == INIC_VAR || opType == ATRIBUICAO || opType == BIN_OP){
         int mainType = root->children->child->dataType; // Gets the type of the first child;
         int secondType = root->children->nextChild->child->dataType; // Gets the type on the right of the operation
-        printf("mainType: (%s) %d  -  secondType %d \n",root->children->child->value->input,mainType,secondType);
+        //printf("mainType: (%s) %d  -  secondType %d \n",root->children->child->value->input,mainType,secondType);
         if(secondType == CHAR_TYPE){
             if(mainType == INT_TYPE){
                 printf("ERR_CHAR_TO_INT: Conversao implicita proibida de Char para Int na linha %d \n", root->value->lineNumber);
@@ -145,6 +145,7 @@ int doCoercion(ASTNODE *root, int opType){ //opType is the type of the operation
     }else if(opType == IF || opType == IF_ELSE || opType == WHILE){
         root->dataType = root->children->child->dataType;
     }
+    //printf("Tipo convertido %d\n", root->dataType);
 
     return 0;
 }

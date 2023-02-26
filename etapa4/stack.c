@@ -21,7 +21,7 @@ STACK * initStack(){
 }
 
 void push(STACK *st){
-    printf("push stack\n");
+    //printf("push stack\n");
 
     struct hashmap *newMap = hashmap_new(sizeof(TNODE), 0, 0, 0, table_hash, table_compare, NULL,NULL); //Create new table
 
@@ -37,7 +37,7 @@ void push(STACK *st){
 }
 
 void pop(STACK *st){
-    printf("pop stack\n");
+    //printf("pop stack\n");
     hashmap_free(st->top->map);//Free table (map)
     st->top = st->top->bottom; //Update top
     
@@ -69,7 +69,7 @@ TNODE * find(STACK *st, char * identifier){
 void addItem(STACK *st, TNODE * value){
     STACKNODE * stNode = st->top;
     hashmap_set(stNode->map, value);
-    printf("added: %s \n",value->lexical_value.input);
+    //printf("added: %s \n",value->lexical_value.input);
 }
 
 
@@ -102,7 +102,7 @@ TNODE * createItem(int category, int type, VALOR_T lexical_value){
     
     tNode->size = size;
 
-    printf("item created.\n");
+    //printf("item created.\n");
     return tNode;
 }
 
@@ -118,7 +118,7 @@ bool isDecl(STACK *st, VALOR_T identifier){
     return true;
 }
 bool isUndecl(STACK *st, VALOR_T identifier){
-    printf("identifier.input: %s\n",identifier.input);
+    //printf("identifier.input: %s\n",identifier.input);
     TNODE * tnode = find(st,identifier.input);
     if(tnode == NULL)
         return true;
@@ -126,15 +126,27 @@ bool isUndecl(STACK *st, VALOR_T identifier){
 }
 
 void printErrorDecl(VALOR_T var, TNODE * varDeclared){
-    printf("ERR_DECLARED: %s (linha: %d) ja declarada na linha: %d\n", var.input, var.lineNumber,varDeclared->line);
+    printf("ERR_DECLARED: ");
+    switch (varDeclared->category)
+    {
+    case VARIABLE:
+        printf("variavel %s (linha: %d) ja declarada na linha: %d\n", var.input, var.lineNumber,varDeclared->line);
+        break;
+    case ARRAY:
+        printf("array %s (linha: %d) ja declarada na linha: %d\n", var.input, var.lineNumber,varDeclared->line);
+        break;
+    case FUNCTION:
+        printf("funcao %s (linha: %d) ja declarada na linha: %d\n", var.input, var.lineNumber,varDeclared->line);
+        break;
+    }
 }
 
 void printErrorUndecl(VALOR_T var){
-    printf("ERR_UNDECLARED: %s (linha: %d) não declarada \n", var.input,var.lineNumber);
+    printf("ERR_UNDECLARED: %s (linha: %d) não declarada \n", var.input,var.lineNumber);    
 }
 
 int printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared){
-    printf("print error use\n");
+    //printf("print error use\n");
     int returnCode ;
     if(varDeclared->type == CHAR_TYPE && usingType == ARRAY){
         printf("ERR_CHAR_VECTOR: arranjos nao podem ser do tipo char (%s), linha: %d",varDeclared->lexical_value.input,var.lineNumber);
@@ -175,7 +187,7 @@ int printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared){
 
 bool checkUse(STACK *st, VALOR_T var, int usingType){
 
-    printf("checking use of %s\n",var.input);
+    //printf("checking use of %s\n",var.input);
     TNODE * tnode = find(st,var.input);
     if(usingType == ARRAY && tnode->type == CHAR_TYPE){
         return false;
@@ -193,10 +205,10 @@ int getType(STACK *st, VALOR_T identifier){
 }
 
 TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * arr){
-    printf("array size: %d\n",arr->size);
+    //printf("array size: %d\n",arr->size);
     int totalSize = 1;
     for(int i=0;i<arr->used;i++){
-        printf("i: %d = %d \n",i,arr->array[i]);
+        //printf("i: %d = %d \n",i,arr->array[i]);
         totalSize *= arr->array[i];
     }
 
@@ -209,7 +221,7 @@ TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * a
     tNode->lexical_value = lexical_value;
     tNode->type = type;
 
-    printf("lexical_value: %s\n",tNode->lexical_value.input);
+    //printf("lexical_value: %s\n",tNode->lexical_value.input);
 
 //Fix size whe is array
     switch(type){
@@ -223,13 +235,13 @@ TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * a
             totalSize *= 1;
             break;
     }
-    printf("sizeofarray: %d\n" , totalSize);
+    //printf("sizeofarray: %d\n" , totalSize);
     tNode->size = totalSize;
 
 
 
 
     freeArray(arr);
-    printf("item created.\n");
+    //printf("item created.\n");
     return tNode;
 }

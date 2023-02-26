@@ -25,6 +25,6 @@ int main (int argc, char **argv)
 
   arvore = NULL;
   yylex_destroy();
-  printf("retorno: %d\n",ret);
+  //printf("retorno: %d\n",ret);
   return ret;
 }
