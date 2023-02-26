@@ -307,7 +307,7 @@ void printLabels(void * node){
         printf("%p [label=\"%s\"]\n", ((ASTNODE*)node), "-");
         break;
     case BIN_PERCENT:
-        printf("%p [label=\"%s\"]\n", ((ASTNODE*)node), "%%");
+        printf("%p [label=\"%s\"]\n", ((ASTNODE*)node), "%");
         break;
     case BIN_DIV:
         printf("%p [label=\"%s\"]\n", ((ASTNODE*)node), "/");
@@ -340,7 +340,9 @@ void printLabels(void * node){
     }*/
 }
 
-bool isInteger(ASTNODE * root){
-    return root->dataType == INT_TYPE;
-}
+
+//Dont need to check whether indexes of array are integers?
+//bool isInteger(ASTNODE * root){
+//    return root->dataType == INT_TYPE;
+//}
 
