@@ -262,7 +262,7 @@ void printLabels(void * node){
         printf("%p [label=\"%s\"]\n", ((ASTNODE*)node), "^");
         break;
     case CHAMADA_FUNC:
-        printf("%p [label=\"%s\"]\n", ((ASTNODE*)node), "call");
+        printf("%p [label=\"%s %s\"]\n", ((ASTNODE*)node), "call", ((ASTNODE*)node)->value->input);
         break;
     case RETURN:
         printf("%p [label=\"%s\"]\n", ((ASTNODE*)node), "return");
