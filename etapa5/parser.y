@@ -200,7 +200,7 @@ comando: declaracao_var_local { $$ = $1;}|
          controle_fluxo { $$ = $1;}| 
          controle_fluxo_while { $$ = $1;};
 
-literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT, INT_TYPE); addItem(stack, createItem(LITERAL,INT_TYPE,*$1)); }| //REVISAR
+literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT, INT_TYPE); addItem(stack, createItem(LITERAL,INT_TYPE,*$1)); $$->temp = generateTemp(); char valStr[100]; sprintf(valStr,"%d",$1->tokenValue.valInt); strcpy($$->code,generateCode("loadI",valStr,$$->temp, NULL));  }| //REVISAR
          TK_LIT_CHAR  { $$ = create_leaf($1, VAL_LIT_CHAR, CHAR_TYPE); addItem(stack, createItem(LITERAL,CHAR_TYPE,*$1));}| 
          TK_LIT_FALSE { $$ = create_leaf($1, VAL_LIT_BOOL, BOOL_TYPE); addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));}| 
          TK_LIT_TRUE  { $$ = create_leaf($1, VAL_LIT_BOOL, BOOL_TYPE); addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));}| 
@@ -215,7 +215,7 @@ identificador_local: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*
 
 lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local { if($3 != 0){$$ = $3; add_child(&$$, &$1);} } | identificador_local { $$ = $1; };
 
-atribuicao: identificador_expressao '=' expressao {$$ = create_node($2, ATRIBUICAO); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,ATRIBUICAO); if(ret != 0) exit (ret); } ;
+atribuicao: identificador_expressao '=' expressao {$$ = create_node($2, ATRIBUICAO); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,ATRIBUICAO); if(ret != 0) exit (ret); strcpy($$->code,$3->code); char valStr[100]; sprintf(valStr,"%d",getOffset(stack,$1->value->input)); strcat($$->code," "); strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));} ;
 
 lista_argumentos: argumentos_entrada { $$ = $1; } | { $$ = 0; };
 argumentos_entrada: argumentos_entrada ',' argumento { $$ = $1; add_child(&$$, &$3); } | argumento { $$ = $1; };
@@ -250,7 +250,18 @@ G: G TK_OC_GE H { $$ = create_node($2, EXP_GE); add_child(&$$, &$1); add_child(&
    G '>' H { $$ = create_node($2, EXP_GT); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } |
    H { $$ = $1; };
 
-H: H '+' I { $$ = create_node($2, BIN_PLUS); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } | H '-' I { $$ = create_node($2, BIN_MINUS); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } | I { $$ = $1; };
+H: H '+' I { $$ = create_node($2, BIN_PLUS); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
+
+      //add
+      $$->temp = generateTemp();
+      strcpy($$->code,generateCode("add",$1->temp,$3->temp,$$->temp));
+      strcat($1->code," ");
+      strcat($1->code,$3->code);
+      strcat($1->code," ");
+      strcat($1->code,$$->code);
+      strcpy($$->code,$1->code);
+
+} | H '-' I { $$ = create_node($2, BIN_MINUS); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } | I { $$ = $1; };
 
 I: I '%' J { $$ = create_node($2, BIN_PERCENT); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); }| I '/' J { $$ = create_node($2, BIN_DIV); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } | I '*' J { $$ = create_node($2, BIN_MULT); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); }| J { $$ = $1; };
 
@@ -262,7 +273,14 @@ L: '(' E ')' { $$ = $2; } | operando { $$ = $1; };
 
 operando: literal { $$ = $1; } | chamada_funcao { $$ = $1; } | identificador_expressao { $$ = $1; };
 
-identificador_expressao: TK_IDENTIFICADOR { if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); exit (ERR_UNDECLARED); } if(!checkUse(stack,*$1, VARIABLE)){ exit (printErrorUse(*$1,VARIABLE, find(stack,$1->input))); } $$ = create_leaf($1, IDENTIFICADOR, getType(stack,*$1)); } | TK_IDENTIFICADOR '[' lista_expressoes ']' 
+identificador_expressao: TK_IDENTIFICADOR { if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); exit (ERR_UNDECLARED); } if(!checkUse(stack,*$1, VARIABLE)){ exit (printErrorUse(*$1,VARIABLE, find(stack,$1->input))); } $$ = create_leaf($1, IDENTIFICADOR, getType(stack,*$1)); 
+
+      $$->temp = generateTemp();
+      char valStr[100];
+      sprintf(valStr,"%d",getOffset(stack,$1->input)); //get offset on symbol table
+      strcat($$->code,generateCode("loadAI","rfp", valStr,$$->temp));
+
+} | TK_IDENTIFICADOR '[' lista_expressoes ']' 
 {  if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); exit (ERR_UNDECLARED); } if(!checkUse(stack,*$1, ARRAY)){ exit( printErrorUse(*$1,ARRAY, find(stack,$1->input))) ;} $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR, getType(stack,*$1));  add_child(&$$,&identLeaf); add_child(&$$,&$3); doCoercion($$, UN_OP); deleteValue($4); } ; //Cant pass type here, needs to check the hashtable
 
 

@@ -11,7 +11,7 @@ typedef struct stackNode{
 
     struct hashmap *map;
     struct stackNode * bottom;
-
+    int currOffset;
 }STACKNODE;
 
 typedef struct stackP{ 
@@ -27,7 +27,7 @@ typedef struct tableNode{
     int type;
     int size;
     VALOR_T lexical_value;
-
+    int offset;
 
 }TNODE;
 
@@ -61,5 +61,7 @@ int printErrorUse(VALOR_T var, int usingType, TNODE * varDeclared); //Print and 
 bool checkUse(STACK *st, VALOR_T var, int type); //Checks if it's well used
 
 int getType(STACK * st, VALOR_T identifier);
+
+int getOffset(STACK *st, char * identifier);
 
 TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * arr);

@@ -112,6 +112,8 @@ typedef struct astNode{
     VALOR_T * value;
     struct astChildren * children;
     int dataType;
+    char code[1000];
+    char * temp;
 } ASTNODE;
 
 void deleteValue(VALOR_T * value);
@@ -131,6 +133,10 @@ VALOR_T * create_value(int type, char * text, int lineNumber);
 void printLabels(void * node);
 
 void printAst(ASTNODE * node);
+
+char * generateTemp();
+
+char * generateCode(char *mnem, const char * reg1, const char * reg2, const char * reg3);
 
 //bool isIngeger(ASTNODE * node);
 

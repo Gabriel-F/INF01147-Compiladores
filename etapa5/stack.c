@@ -26,6 +26,7 @@ void push(STACK *st){
     struct hashmap *newMap = hashmap_new(sizeof(TNODE), 0, 0, 0, table_hash, table_compare, NULL,NULL); //Create new table
 
     STACKNODE *stNode = (STACKNODE*)malloc(sizeof(STACKNODE));
+    stNode->currOffset = 0;
     stNode->map = newMap;
     if(st->top == NULL){
         stNode->bottom = NULL;
@@ -68,6 +69,8 @@ TNODE * find(STACK *st, char * identifier){
 
 void addItem(STACK *st, TNODE * value){
     STACKNODE * stNode = st->top;
+    value->offset = st->top->currOffset;
+    st->top->currOffset += value->size;
     hashmap_set(stNode->map, value);
     //printf("added: %s \n",value->lexical_value.input);
 }
@@ -244,4 +247,10 @@ TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * a
     freeArray(arr);
     //printf("item created.\n");
     return tNode;
+}
+
+int getOffset(STACK *st, char * identifier){
+    TNODE * found = find(st,identifier);
+
+    return found->offset;
 }

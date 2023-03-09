@@ -41,8 +41,10 @@ ASTNODE * create_node(VALOR_T * value , int type){
     node->type = type;
     node->value = value;
     node->children = newChild;
+    
     node->dataType = 0; //Do the coercion after add all childs
-
+    strcpy(node->code,"");
+    node->temp = NULL;
     return node;
 }
 
@@ -56,6 +58,8 @@ ASTNODE * create_leaf(VALOR_T * value , int type, int dataType){
     node->value = value;
     node->children = newChild;
     node->dataType = dataType;
+    strcpy(node->code,"");
+    node->temp = NULL;
     return node;
 }
 
@@ -211,12 +215,14 @@ void printAst(ASTNODE * node){
     }
     ASTNODE * root = ((ASTNODE*)node);
     //DFS on children
-    
+    if(strcmp(root->code,"") != 0)
+        printf("code: %s\n",root->code);
     ASTCHILDREN * p = root->children;
   
         //Find first empty child
         while(p->child != NULL){
             printf("%p, %p\n",root,p->child);
+            
             printAst(p->child);
             if(p->nextChild == NULL)
                 break;
@@ -340,7 +346,51 @@ void printLabels(void * node){
             printLabels(((ASTNODE*)node)->child[i]);
     }*/
 }
+char *generateTemp(){
+  char *retorno = malloc(256);
+  static int contador = 0;
+  snprintf(retorno, 256, "r%d", contador++);
+  return retorno;
+}
 
+char * generateCode(char *mnem, const char * reg1, const char * reg2, const char * reg3){
+    char * ans = malloc(200);
+    if(strcmp(mnem,"loadI") == 0){
+        char res[200] = "loadI ";
+        strcat(res,reg1);
+        strcat(res," => ");
+        strcat(res,reg2);
+        strcpy(ans,res);
+    }
+    if(strcmp(mnem,"storeAI") == 0){
+        char res[200] = "storeAI ";
+        strcat(res,reg1);
+        strcat(res," => ");
+        strcat(res,reg2);
+        strcat(res,", ");
+        strcat(res,reg3);
+        strcpy(ans,res);
+    }
+    if(strcmp(mnem,"add") == 0){
+        char res[200] = "add ";
+        strcat(res,reg1);
+        strcat(res,", ");
+        strcat(res,reg2);
+        strcat(res," => ");
+        strcat(res,reg3);
+        strcpy(ans,res);
+    }
+    if(strcmp(mnem,"loadAI") == 0){
+        char res[200] = "loadAI ";
+        strcat(res,reg1);
+        strcat(res,", ");
+        strcat(res,reg2);
+        strcat(res," => ");
+        strcat(res,reg3);
+        strcpy(ans,res);
+    }
+    return ans;
+}
 
 //Dont need to check whether indexes of array are integers?
 //bool isInteger(ASTNODE * root){
