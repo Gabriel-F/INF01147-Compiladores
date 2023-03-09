@@ -1,0 +1,24 @@
+//Nos comandos de fluxo de controle, o tipo de dado da atribuição 
+//(e do comando de inicialização de variável local) é o tipo
+//de quem recebe o valor atribuído; o tipo de dado de um
+//if (com else opcional) e de um while é o tipo de dado
+//da expressão de teste
+
+
+int main(){
+	
+	int i;
+	float f;
+	bool  b;
+
+	if ( 2 ) then {
+	};
+
+	if (b) then {	
+	}
+	else{
+	};
+
+	while(f){
+	};
+}

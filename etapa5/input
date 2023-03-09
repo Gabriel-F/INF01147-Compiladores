@@ -1,0 +1,17 @@
+//Nos comandos de fluxo de controle, o tipo de dado da atribuição 
+//(e do comando de inicialização de variável local) é o tipo
+//de quem recebe o valor atribuído; o tipo de dado de um
+//if (com else opcional) e de um while é o tipo de dado
+//da expressão de teste
+
+int arr[2];
+int main(){
+	
+	char c;
+
+	c = '2';
+}
+
+int isWorking(int a){
+	return a + 2;
+}
