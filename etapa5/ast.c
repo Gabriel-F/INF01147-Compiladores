@@ -355,6 +355,16 @@ char *generateTemp(){
 
 char * generateCode(char *mnem, const char * reg1, const char * reg2, const char * reg3){
     char * ans = malloc(200);
+    if(strcmp(mnem,"neg") == 0){
+        //multiply for -1
+        char res[200] = "multI ";
+        strcat(res,reg1);
+        strcat(res,", ");
+        strcat(res,"-1");
+        strcat(res," => ");
+        strcat(res,reg2);
+        strcpy(ans,res);
+    }
     if(strcmp(mnem,"loadI") == 0){
         char res[200] = "loadI ";
         strcat(res,reg1);
@@ -371,8 +381,10 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,reg3);
         strcpy(ans,res);
     }
-    if(strcmp(mnem,"add") == 0){
-        char res[200] = "add ";
+    if(strcmp(mnem,"add") == 0 || strcmp(mnem,"sub") == 0 || strcmp(mnem,"div") == 0 || strcmp(mnem,"mult") == 0){
+        char res[200] = "";
+        strcat(res,mnem);
+        strcat(res, " ");
         strcat(res,reg1);
         strcat(res,", ");
         strcat(res,reg2);

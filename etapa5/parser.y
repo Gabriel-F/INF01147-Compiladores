@@ -166,7 +166,10 @@ lista_de_identificadores: lista_de_identificadores ',' var_multidimensional;
 */
 
 //AST:  id -> ( nome , primeiro comando )
-declaracao_funcao: cabecalho corpo  { $$ = create_node($1, IDENTIFICADOR); add_child(&$$, &$2); };
+declaracao_funcao: cabecalho corpo  { $$ = create_node($1, IDENTIFICADOR); add_child(&$$, &$2);
+      //strcpy($$->code,$2->code);   
+
+ };
 cabecalho: tipo TK_IDENTIFICADOR { if(isDecl(stack,*$2)) { printErrorDecl(*$2,find(stack,$2->input)); exit (ERR_DECLARED);} addItem(stack, createItem(FUNCTION,currType,*$2)); push(stack); }'(' lista_parametros ')' { $$ = $2; };
 lista_parametros: parametros_entrada { $$ = 0; } | { $$ = 0;};
 parametros_entrada: parametros_entrada ',' parametro { $$ = 0; } | parametro { $$ = 0; };
@@ -211,11 +214,22 @@ literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT, INT_TYPE); addItem(sta
 
 declaracao_var_local: tipo lista_de_identificadores_local { $$ = $2; };
 
-identificador_local: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); exit (ERR_DECLARED);} addItem(stack, createItem(VARIABLE,currType,*$1)); $$=0; deleteValue($1); } | identificador TK_OC_LE literal { $$ = create_node($2, INIC_VAR); add_child(&$$,&$1); add_child(&$$,&$3); int ret = doCoercion($$,INIC_VAR); if(ret != 0) exit (ret); };
+identificador_local: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); exit (ERR_DECLARED);} addItem(stack, createItem(VARIABLE,currType,*$1)); $$=0; deleteValue($1); } | identificador TK_OC_LE literal { $$ = create_node($2, INIC_VAR); add_child(&$$,&$1); add_child(&$$,&$3); int ret = doCoercion($$,INIC_VAR); if(ret != 0) exit (ret); 
+
+//Inicialization
+//
+      strcpy($$->code,$3->code);
+      char valStr[100]; sprintf(valStr,"%d",getOffset(stack,$1->value->input));
+      strcat($$->code," ");
+      strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));
+
+};
 
 lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local { if($3 != 0){$$ = $3; add_child(&$$, &$1);} } | identificador_local { $$ = $1; };
 
-atribuicao: identificador_expressao '=' expressao {$$ = create_node($2, ATRIBUICAO); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,ATRIBUICAO); if(ret != 0) exit (ret); strcpy($$->code,$3->code); char valStr[100]; sprintf(valStr,"%d",getOffset(stack,$1->value->input)); strcat($$->code," "); strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));} ;
+atribuicao: identificador_expressao '=' expressao {$$ = create_node($2, ATRIBUICAO); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,ATRIBUICAO); if(ret != 0) exit (ret);
+ strcpy($$->code,$3->code); char valStr[100]; sprintf(valStr,"%d",getOffset(stack,$1->value->input));
+strcat($$->code," "); strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));} ;
 
 lista_argumentos: argumentos_entrada { $$ = $1; } | { $$ = 0; };
 argumentos_entrada: argumentos_entrada ',' argumento { $$ = $1; add_child(&$$, &$3); } | argumento { $$ = $1; };
@@ -254,24 +268,22 @@ H: H '+' I { $$ = create_node($2, BIN_PLUS); add_child(&$$, &$1); add_child(&$$,
 
       //BIN_PLUS
       $$->temp = generateTemp();
-      strcpy($$->code,generateCode("add",$1->temp,$3->temp,$$->temp));
-      strcat($1->code," ");
-      strcat($1->code,$3->code);
-      strcat($1->code," ");
-      strcat($1->code,$$->code);
       strcpy($$->code,$1->code);
+      strcat($$->code," ");
+      strcat($$->code,$3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("add",$1->temp,$3->temp,$$->temp));
 
 } 
 | H '-' I { $$ = create_node($2, BIN_MINUS); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret);
 
       //BIN_MINUS
       $$->temp = generateTemp();
-      strcpy($$->code,generateCode("sub",$1->temp,$3->temp,$$->temp));
-      strcat($1->code," ");
-      strcat($1->code,$3->code);
-      strcat($1->code," ");
-      strcat($1->code,$$->code);
       strcpy($$->code,$1->code);
+      strcat($$->code," ");
+      strcat($$->code,$3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("sub",$1->temp,$3->temp,$$->temp));
 
 } 
 | I { $$ = $1; };
@@ -281,29 +293,46 @@ I: I '%' J { $$ = create_node($2, BIN_PERCENT); add_child(& $$, & $1); add_child
 
       //BIN_DIV
       $$->temp = generateTemp();
-      strcpy($$->code,generateCode("div",$1->temp,$3->temp,$$->temp));
-      strcat($1->code," ");
-      strcat($1->code,$3->code);
-      strcat($1->code," ");
-      strcat($1->code,$$->code);
       strcpy($$->code,$1->code);
+      strcat($$->code," ");
+      strcat($$->code,$3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("div",$1->temp,$3->temp,$$->temp));
 
 } 
 | I '*' J { $$ = create_node($2, BIN_MULT); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
 
       //BIN_MULT
       $$->temp = generateTemp();
-      strcpy($$->code,generateCode("mult",$1->temp,$3->temp,$$->temp));
-      strcat($1->code," ");
-      strcat($1->code,$3->code);
-      strcat($1->code," ");
-      strcat($1->code,$$->code);
       strcpy($$->code,$1->code);
+      strcat($$->code," ");
+      strcat($$->code,$3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("mult",$1->temp,$3->temp,$$->temp));
 
 }
 | J { $$ = $1; };
 
-J: '-' K { $$ = create_node($1, UN_MINUS); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); } | '!' K { $$ = create_node($1, UN_NEG); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); } | L { $$ = $1; };
+J: '-' K { $$ = create_node($1, UN_MINUS); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); 
+      $$->temp = generateTemp();
+      strcpy($$->code,$2->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("neg",$2->temp,$$->temp,NULL));
+
+} | '!' K { $$ = create_node($1, UN_NEG); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); 
+
+      //Fazer depois
+      //cpm_eq K 0 => tempOpaca
+      //cbr tempOpaca -> labelEqual0, labelEqual1;
+      //labelEqual0: 
+      //    loadI 0 => temp
+      //    jumpI -> labelDepois
+      //labelEqual1:
+      //    loadI 0 => temp
+      //labelDepois:
+      //    nop
+
+} | L { $$ = $1; };
 
 K: '-' K { $$ = create_node($1, UN_MINUS); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); } | '!' K { $$ = create_node($1, UN_NEG); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); } | L { $$ = $1; };
 
