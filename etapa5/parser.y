@@ -252,7 +252,7 @@ G: G TK_OC_GE H { $$ = create_node($2, EXP_GE); add_child(&$$, &$1); add_child(&
 
 H: H '+' I { $$ = create_node($2, BIN_PLUS); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
 
-      //add
+      //BIN_PLUS
       $$->temp = generateTemp();
       strcpy($$->code,generateCode("add",$1->temp,$3->temp,$$->temp));
       strcat($1->code," ");
@@ -261,9 +261,47 @@ H: H '+' I { $$ = create_node($2, BIN_PLUS); add_child(&$$, &$1); add_child(&$$,
       strcat($1->code,$$->code);
       strcpy($$->code,$1->code);
 
-} | H '-' I { $$ = create_node($2, BIN_MINUS); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } | I { $$ = $1; };
+} 
+| H '-' I { $$ = create_node($2, BIN_MINUS); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret);
 
-I: I '%' J { $$ = create_node($2, BIN_PERCENT); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); }| I '/' J { $$ = create_node($2, BIN_DIV); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } | I '*' J { $$ = create_node($2, BIN_MULT); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); }| J { $$ = $1; };
+      //BIN_MINUS
+      $$->temp = generateTemp();
+      strcpy($$->code,generateCode("sub",$1->temp,$3->temp,$$->temp));
+      strcat($1->code," ");
+      strcat($1->code,$3->code);
+      strcat($1->code," ");
+      strcat($1->code,$$->code);
+      strcpy($$->code,$1->code);
+
+} 
+| I { $$ = $1; };
+
+I: I '%' J { $$ = create_node($2, BIN_PERCENT); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); }
+| I '/' J { $$ = create_node($2, BIN_DIV); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
+
+      //BIN_DIV
+      $$->temp = generateTemp();
+      strcpy($$->code,generateCode("div",$1->temp,$3->temp,$$->temp));
+      strcat($1->code," ");
+      strcat($1->code,$3->code);
+      strcat($1->code," ");
+      strcat($1->code,$$->code);
+      strcpy($$->code,$1->code);
+
+} 
+| I '*' J { $$ = create_node($2, BIN_MULT); add_child(& $$, & $1); add_child(& $$, & $3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
+
+      //BIN_MULT
+      $$->temp = generateTemp();
+      strcpy($$->code,generateCode("mult",$1->temp,$3->temp,$$->temp));
+      strcat($1->code," ");
+      strcat($1->code,$3->code);
+      strcat($1->code," ");
+      strcat($1->code,$$->code);
+      strcpy($$->code,$1->code);
+
+}
+| J { $$ = $1; };
 
 J: '-' K { $$ = create_node($1, UN_MINUS); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); } | '!' K { $$ = create_node($1, UN_NEG); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); } | L { $$ = $1; };
 
