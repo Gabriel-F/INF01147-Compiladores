@@ -370,6 +370,7 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,"-1");
         strcat(res," => ");
         strcat(res,reg2);
+        strcat(res,"\n");
         strcpy(ans,res);
     }
     if(strcmp(mnem,"loadI") == 0){
@@ -377,6 +378,7 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,reg1);
         strcat(res," => ");
         strcat(res,reg2);
+        strcat(res,"\n");
         strcpy(ans,res);
     }
     if(strcmp(mnem,"storeAI") == 0){
@@ -386,6 +388,7 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,reg2);
         strcat(res,", ");
         strcat(res,reg3);
+        strcat(res,"\n");
         strcpy(ans,res);
     }
     if(strcmp(mnem,"add") == 0 || strcmp(mnem,"sub") == 0 || strcmp(mnem,"div") == 0 || strcmp(mnem,"mult") == 0){
@@ -397,6 +400,7 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,reg2);
         strcat(res," => ");
         strcat(res,reg3);
+        strcat(res,"\n");
         strcpy(ans,res);
     }
     if(strcmp(mnem,"loadAI") == 0){
@@ -406,6 +410,7 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,reg2);
         strcat(res," => ");
         strcat(res,reg3);
+        strcat(res,"\n");
         strcpy(ans,res);
     }
     if(strcmp(mnem,"and") == 0 || strcmp(mnem,"or") == 0 || strcmp(mnem,"cmp_GE") == 0 || strcmp(mnem,"cmp_LE") == 0 || strcmp(mnem,"cmp_GT") == 0 || strcmp(mnem,"cmp_LT") == 0 || strcmp(mnem,"cmp_EQ") == 0 || strcmp(mnem,"cmp_NE") == 0){
@@ -422,28 +427,111 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,reg2);
         strcat(res," -> ");
         strcat(res, tempOpaca);
-        strcat(res," cbr ");
+        strcat(res,"\ncbr ");
         strcat(res,tempOpaca);
         strcat(res," -> ");
         strcat(res,labelTrue);
         strcat(res,", ");
         strcat(res,labelFalse);
-        strcat(res," ");
+        strcat(res,"\n");
         strcat(res,labelTrue);
         strcat(res,": loadI 1 => ");
         strcat(res, reg3);
-        strcat(res," jumpI -> ");
+        strcat(res,"\njumpI -> ");
         strcat(res,labelDepois);
-        strcat(res," ");
+        strcat(res,"\n");
         strcat(res,labelFalse);
-        strcat(res,": laodI 0 => ");
+        strcat(res,": loadI 0 => ");
         strcat(res, reg3);
-        strcat(res," ");
+        strcat(res,"\n");
         strcat(res,labelDepois);
+        strcat(res,": nop ");
+        strcat(res,"\n");
+        strcpy(ans,res);
+    }
+    if(strcmp(mnem,"if") == 0){
+        char res[5000];
+
+        char * tempZero = generateTemp();
+        char * tempRes = generateTemp();
+        char * labelTrue = generateRotulo();
+        char * labelFalse = generateRotulo();
+        strcpy(res,"\nloadI 0 => ");
+        strcat(res,tempZero);
+        strcat(res," ");
+        //Compare expression result with zero: if is not equal then it's true
+        strcat(res,"\ncmp_NE ");
+        strcat(res,reg1);
+        strcat(res,", ");
+        strcat(res,tempZero);
+        strcat(res," -> ");
+        strcat(res,tempRes);
+        strcat(res,"\ncbr ");
+        strcat(res,tempRes);
+        strcat(res," -> ");
+        strcat(res, labelTrue); //expr == true
+        strcat(res,", ");
+        strcat(res,labelFalse);
+        strcat(res,"\n");
+        strcat(res,labelTrue);
+        strcat(res,": ");
+        strcat(res,reg2); //Code inside of if
+        strcat(res,labelFalse);
         strcat(res,": nop ");
         strcpy(ans,res);
     }
+    if(strcmp(mnem,"if_else") == 0){
+        char res[5000];
+
+        char * tempZero = generateTemp();
+        char * tempRes = generateTemp();
+        char * labelTrue = generateRotulo();
+        char * labelFalse = generateRotulo();
+        char * labelDepois = generateRotulo();
+        strcpy(res,"loadI 0 => ");
+        strcat(res,tempZero);
+        strcat(res,"\n");
+        //Compare expression result with zero: if is not equal then it's true
+        strcat(res,"cmp_NE ");
+        strcat(res,reg1);
+        strcat(res,", ");
+        strcat(res,tempZero);
+        strcat(res," -> ");
+        strcat(res,tempRes);
+        strcat(res,"\n");
+        strcat(res,"cbr ");
+        strcat(res,tempRes);
+        strcat(res," -> ");
+        if(reg2 != NULL)
+            strcat(res, labelTrue); //expr == true
+        else
+            strcat(res,labelDepois); //Occurs when there is no command in true block
+        strcat(res,", ");
+        if(reg3 != NULL)
+            strcat(res, labelFalse); //expr == true
+        else
+            strcat(res,labelDepois); //Occurs when there is no command in true block
+        strcat(res,"\n");
+        strcat(res,labelTrue);
+        strcat(res,": ");
+        strcat(res,reg2); //Code inside of if
+        strcat(res,"jumpI -> ");
+        strcat(res,labelDepois);
+
+        strcat(res,"\n");
+        strcat(res,labelFalse);
+        strcat(res,": ");
+        strcat(res,reg3);
+        strcat(res,labelDepois);
+        strcat(res,": ");
+        strcpy(ans,res);
+    }
     return ans;
+}
+
+void imprimeCodigo(void *node){
+    ASTNODE * rootNode = (ASTNODE*)node;
+    printf("%s",rootNode->code);
 }
 
 //Dont need to check whether indexes of array are integers?

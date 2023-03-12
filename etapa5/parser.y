@@ -124,7 +124,11 @@ programa: lista_de_elementos { arvore = $$;  pop(stack); }; // REVISAR
 programa: { $$ = 0; };
 
 //lista_de_elementos: lista_de_elementos declaracao_funcao { if($1 == 0){ $$ = $2; } else { $$ = $1; add_child(&$$, &$2);} }; //I think it's impossible to do this with left recursion
-lista_de_elementos: declaracao_funcao lista_de_elementos{ $$ = $1; add_child(&$$, &$2); }; //I think it's impossible to do this with left recursion
+lista_de_elementos: declaracao_funcao lista_de_elementos{ $$ = $1; add_child(&$$, &$2); 
+      if($2 != NULL){
+            strcat($$->code,$2->code);
+      }
+}; //I think it's impossible to do this with left recursion
 lista_de_elementos: declaracao_var_global lista_de_elementos { $$ = $2; };
 lista_de_elementos: declaracao_funcao { $$ = $1; };
 lista_de_elementos: declaracao_var_global { $$ = 0;}; //Nao vai na AST //REVISAR
@@ -169,6 +173,12 @@ lista_de_identificadores: lista_de_identificadores ',' var_multidimensional;
 declaracao_funcao: cabecalho corpo  { $$ = create_node($1, IDENTIFICADOR); add_child(&$$, &$2);
       //strcpy($$->code,$2->code);   
 
+      //Do the function things
+      // ....
+
+      if($2 != NULL)
+            strcat($$->code,$2->code);
+
  };
 cabecalho: tipo TK_IDENTIFICADOR { if(isDecl(stack,*$2)) { printErrorDecl(*$2,find(stack,$2->input)); exit (ERR_DECLARED);} addItem(stack, createItem(FUNCTION,currType,*$2)); push(stack); }'(' lista_parametros ')' { $$ = $2; };
 lista_parametros: parametros_entrada { $$ = 0; } | { $$ = 0;};
@@ -178,7 +188,12 @@ parametro: tipo TK_IDENTIFICADOR { if(isDecl(stack,*$2)) { printErrorDecl(*$2,fi
 corpo : bloco_comandos { $$ = $1; };
 
 bloco_comandos : '{' lista_comandos '}'  { $$ = $2; pop(stack); } | '{' '}' {  $$ = 0; pop(stack); };
-lista_comandos: comando ';' lista_comandos { if($1 == 0) { $$ = $3; } else {$$ = $1; add_child(&$$, &$3); } } | comando ';'  { $$ = $1; };
+lista_comandos: comando ';' lista_comandos { if($1 == 0) { $$ = $3; } else { $$ = $1; add_child(&$$, &$3);
+      if($$ != NULL && $3 != NULL){
+            strcat($$->code,$3->code);
+      }
+
+ } } | comando ';'  { $$ = $1; };
 
 
 //FOLHA : LITERAIS, IDENTIFICADORES
@@ -220,7 +235,6 @@ identificador_local: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*
 //
       strcpy($$->code,$3->code);
       char valStr[100]; sprintf(valStr,"%d",getOffset(stack,$1->value->input));
-      strcat($$->code," ");
       strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));
 
 };
@@ -229,14 +243,37 @@ lista_de_identificadores_local: lista_de_identificadores_local ',' identificador
 
 atribuicao: identificador_expressao '=' expressao {$$ = create_node($2, ATRIBUICAO); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,ATRIBUICAO); if(ret != 0) exit (ret);
  strcpy($$->code,$3->code); char valStr[100]; sprintf(valStr,"%d",getOffset(stack,$1->value->input));
-strcat($$->code," "); strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));} ;
+ strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));} ;
 
 lista_argumentos: argumentos_entrada { $$ = $1; } | { $$ = 0; };
 argumentos_entrada: argumentos_entrada ',' argumento { $$ = $1; add_child(&$$, &$3); } | argumento { $$ = $1; };
 argumento: expressao { $$ = $1; };
 
-controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos  { $$ = create_node($1, IF); add_child(&$$,&$3); add_child(&$$,&$7); int ret = doCoercion($$,IF); if(ret != 0) exit (ret);  } | 
-                TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos TK_PR_ELSE push_stack bloco_comandos { $$ = create_node($1, IF_ELSE); add_child(&$$,&$3); add_child(&$$,&$7); add_child(&$$,&$10); int ret = doCoercion($$,IF_ELSE); if(ret != 0) exit (ret); }; // REVISAR
+controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos  { $$ = create_node($1, IF); add_child(&$$,&$3); add_child(&$$,&$7); int ret = doCoercion($$,IF); if(ret != 0) exit (ret);  
+      //True = any value different than 0
+      //False = 0
+      //Should stay even when $7 is Null because can have side effects
+      strcpy($$->code,$3->code);
+      if($7 != NULL){
+            strcat($$->code,generateCode("if",$3->temp, $7->code, NULL)); //Pass expression value and the code of command block
+      }
+            //strcat($$->code,"\n");
+      
+      
+
+
+} | TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos TK_PR_ELSE push_stack bloco_comandos { $$ = create_node($1, IF_ELSE); add_child(&$$,&$3); add_child(&$$,&$7); add_child(&$$,&$10); int ret = doCoercion($$,IF_ELSE); if(ret != 0) exit (ret);
+      
+      strcpy($$->code,$3->code);
+      if($7 != NULL && $10 != NULL){
+            strcat($$->code,generateCode("if_else",$3->temp, $7->code, $10->code)); //Pass expression value and the code of command block
+      }else if($7 == NULL){
+            strcat($$->code,generateCode("if_else",$3->temp, NULL, $10->code)); //Pass expression value and the code of command block
+      }else if($10 == NULL){
+            strcat($$->code,generateCode("if_else",$3->temp, $7->code, NULL)); //Pass expression value and the code of command block
+      }
+
+ };
 
 controle_fluxo_while: TK_PR_WHILE '(' expressao ')' push_stack bloco_comandos { $$ = create_node($1, WHILE); add_child(&$$, &$3); add_child(&$$, &$6); int ret = doCoercion($$,WHILE); if(ret != 0) exit (ret);} ;
 
@@ -255,34 +292,26 @@ expressao: E { $$ = $1;};
 E: E TK_OC_OR T { $$ = create_node($2, EXP_OR); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
       $$->temp = generateTemp();
       strcpy($$->code, $1->code);
-      strcat($$->code, " ");
       strcat($$->code, $3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("or",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
 }  | T { $$ = $1; };
       
 T: T TK_OC_AND F { $$ = create_node($2, EXP_AND); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
       $$->temp = generateTemp();
       strcpy($$->code, $1->code);
-      strcat($$->code, " ");
       strcat($$->code, $3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("and",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
 } | F { $$ = $1; };
 
 F: F TK_OC_EQ G { $$ = create_node($2, EXP_EQ); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
       $$->temp = generateTemp();
       strcpy($$->code, $1->code);
-      strcat($$->code, " ");
       strcat($$->code, $3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("cmp_EQ",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
 } | F TK_OC_NE G  { $$ = create_node($2, EXP_NE); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
       $$->temp = generateTemp();
       strcpy($$->code, $1->code);
-      strcat($$->code, " ");
       strcat($$->code, $3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("cmp_NE",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
 } | G { $$ = $1; };
       
@@ -290,33 +319,25 @@ F: F TK_OC_EQ G { $$ = create_node($2, EXP_EQ); add_child(&$$, &$1); add_child(&
 G: G TK_OC_GE H { $$ = create_node($2, EXP_GE); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
       $$->temp = generateTemp();
       strcpy($$->code, $1->code);
-      strcat($$->code, " ");
       strcat($$->code, $3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("cmp_GE",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
 
 } | G TK_OC_LE H { $$ = create_node($2, EXP_LE); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
       $$->temp = generateTemp();
       strcpy($$->code, $1->code);
-      strcat($$->code, " ");
       strcat($$->code, $3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("cmp_LE",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
 
 } | G '<' H { $$ = create_node($2, EXP_LT); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
       $$->temp = generateTemp();
       strcpy($$->code, $1->code);
-      strcat($$->code, " ");
       strcat($$->code, $3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("cmp_LT",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
 
 }  | G '>' H { $$ = create_node($2, EXP_GT); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
       $$->temp = generateTemp();
       strcpy($$->code, $1->code);
-      strcat($$->code, " ");
       strcat($$->code, $3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("cmp_GT",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
 
 } | H { $$ = $1; };
@@ -326,9 +347,7 @@ H: H '+' I { $$ = create_node($2, BIN_PLUS); add_child(&$$, &$1); add_child(&$$,
       //BIN_PLUS
       $$->temp = generateTemp();
       strcpy($$->code,$1->code);
-      strcat($$->code," ");
       strcat($$->code,$3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("add",$1->temp,$3->temp,$$->temp));
 
 } 
@@ -337,9 +356,7 @@ H: H '+' I { $$ = create_node($2, BIN_PLUS); add_child(&$$, &$1); add_child(&$$,
       //BIN_MINUS
       $$->temp = generateTemp();
       strcpy($$->code,$1->code);
-      strcat($$->code," ");
       strcat($$->code,$3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("sub",$1->temp,$3->temp,$$->temp));
 
 } 
@@ -351,9 +368,7 @@ I: I '%' J { $$ = create_node($2, BIN_PERCENT); add_child(& $$, & $1); add_child
       //BIN_DIV
       $$->temp = generateTemp();
       strcpy($$->code,$1->code);
-      strcat($$->code," ");
       strcat($$->code,$3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("div",$1->temp,$3->temp,$$->temp));
 
 } 
@@ -362,9 +377,7 @@ I: I '%' J { $$ = create_node($2, BIN_PERCENT); add_child(& $$, & $1); add_child
       //BIN_MULT
       $$->temp = generateTemp();
       strcpy($$->code,$1->code);
-      strcat($$->code," ");
       strcat($$->code,$3->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("mult",$1->temp,$3->temp,$$->temp));
 
 }
@@ -373,7 +386,6 @@ I: I '%' J { $$ = create_node($2, BIN_PERCENT); add_child(& $$, & $1); add_child
 J: '-' K { $$ = create_node($1, UN_MINUS); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); 
       $$->temp = generateTemp();
       strcpy($$->code,$2->code);
-      strcat($$->code," ");
       strcat($$->code,generateCode("neg",$2->temp,$$->temp,NULL));
 
 } | '!' K { $$ = create_node($1, UN_NEG); add_child(&$$, &$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); 

@@ -11,6 +11,7 @@ void *arvore = NULL;
 void *stack = NULL;
 Array arr;
 void exporta (void *arvore);
+void imprimeCodigo (void *arvore);
 void libera (void *arvore);
 
 int main (int argc, char **argv)
@@ -19,7 +20,9 @@ int main (int argc, char **argv)
   initArray(&arr,1);
   push(stack);
   int ret = yyparse(); 
-  exporta (arvore);
+
+  imprimeCodigo(arvore);
+  //exporta (arvore);
   libera(arvore);
 
 
