@@ -275,7 +275,13 @@ controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos 
 
  };
 
-controle_fluxo_while: TK_PR_WHILE '(' expressao ')' push_stack bloco_comandos { $$ = create_node($1, WHILE); add_child(&$$, &$3); add_child(&$$, &$6); int ret = doCoercion($$,WHILE); if(ret != 0) exit (ret);} ;
+controle_fluxo_while: TK_PR_WHILE '(' expressao ')' push_stack bloco_comandos { $$ = create_node($1, WHILE); add_child(&$$, &$3); add_child(&$$, &$6); int ret = doCoercion($$,WHILE); if(ret != 0) exit (ret); 
+      strcpy($$->code,$3->code);
+      if($6 != NULL){
+            strcat($$->code,generateCode("while",$3->temp, $6->code, $3->code)); //Pass expression value and the code of command block
+      }
+
+} ;
 
 retorno: TK_PR_RETURN expressao { $$ = create_node( $1, RETURN); add_child(&$$,&$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); } ;
 

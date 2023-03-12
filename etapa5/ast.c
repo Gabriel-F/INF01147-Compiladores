@@ -525,6 +525,45 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,labelDepois);
         strcat(res,": ");
         strcpy(ans,res);
+    }else if(strcmp(mnem,"while") == 0){
+        char res[5000];
+
+        char * tempZero = generateTemp();
+        char * tempRes = generateTemp();
+        char * labelTrue = generateRotulo();
+        char * labelFalse = generateRotulo();
+        char * labelExpr = generateRotulo();
+        strcpy(res,labelExpr);
+        strcat(res,": ");
+        strcat(res,"\nloadI 0 => ");
+        strcat(res,tempZero);
+        strcat(res," ");
+        //Compare expression result with zero: if is not equal then it's true
+        strcat(res,"\ncmp_NE ");
+        strcat(res,reg1);
+        strcat(res,", ");
+        strcat(res,tempZero);
+        strcat(res," -> ");
+        strcat(res,tempRes);
+        strcat(res,"\ncbr ");
+        strcat(res,tempRes);
+        strcat(res," -> ");
+        strcat(res,labelTrue); //expr == true
+        strcat(res,", ");
+        strcat(res,labelFalse);
+        strcat(res,"\n");
+        strcat(res,labelTrue);
+        strcat(res,": ");
+        strcat(res,reg2); //Code inside of if
+        strcat(res," ");
+        strcat(res,reg3); //Execute code of expression
+        strcat(res," jumpI -> ");
+        strcat(res,labelExpr);
+        strcat(res,"\n");
+        strcat(res,labelFalse);
+        strcat(res,": nop ");
+        strcpy(ans,res);
+
     }
     return ans;
 }
