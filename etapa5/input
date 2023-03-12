@@ -1,6 +1,5 @@
 
 int main(){
-	int b;
-	int a <= 2;
-	a = 2 + b * 3;
+	int a;
+	a = 2 && 1 || a < 2;
 }

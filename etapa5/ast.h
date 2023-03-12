@@ -136,6 +136,8 @@ void printAst(ASTNODE * node);
 
 char * generateTemp();
 
+char * generateRotulo();
+
 char * generateCode(char *mnem, const char * reg1, const char * reg2, const char * reg3);
 
 //bool isIngeger(ASTNODE * node);

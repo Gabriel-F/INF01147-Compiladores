@@ -353,8 +353,15 @@ char *generateTemp(){
   return retorno;
 }
 
+char *generateRotulo(){
+  char *retorno = malloc(256);
+  static int rotulo = 0;
+  snprintf(retorno, 256, "l%d", rotulo++);
+  return retorno;
+}
+
 char * generateCode(char *mnem, const char * reg1, const char * reg2, const char * reg3){
-    char * ans = malloc(200);
+    char * ans = malloc(1000);
     if(strcmp(mnem,"neg") == 0){
         //multiply for -1
         char res[200] = "multI ";
@@ -399,6 +406,41 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,reg2);
         strcat(res," => ");
         strcat(res,reg3);
+        strcpy(ans,res);
+    }
+    if(strcmp(mnem,"and") == 0 || strcmp(mnem,"or") == 0 || strcmp(mnem,"cmp_GE") == 0 || strcmp(mnem,"cmp_LE") == 0 || strcmp(mnem,"cmp_GT") == 0 || strcmp(mnem,"cmp_LT") == 0 || strcmp(mnem,"cmp_EQ") == 0 || strcmp(mnem,"cmp_NE") == 0){
+        
+        char * tempOpaca = generateTemp();
+        char * labelTrue = generateRotulo();
+        char * labelFalse = generateRotulo();
+        char * labelDepois = generateRotulo();
+        char res[5000];
+        strcpy(res,mnem);
+        strcat(res," ");
+        strcat(res, reg1);
+        strcat(res,", ");
+        strcat(res,reg2);
+        strcat(res," -> ");
+        strcat(res, tempOpaca);
+        strcat(res," cbr ");
+        strcat(res,tempOpaca);
+        strcat(res," -> ");
+        strcat(res,labelTrue);
+        strcat(res,", ");
+        strcat(res,labelFalse);
+        strcat(res," ");
+        strcat(res,labelTrue);
+        strcat(res,": loadI 1 => ");
+        strcat(res, reg3);
+        strcat(res," jumpI -> ");
+        strcat(res,labelDepois);
+        strcat(res," ");
+        strcat(res,labelFalse);
+        strcat(res,": laodI 0 => ");
+        strcat(res, reg3);
+        strcat(res," ");
+        strcat(res,labelDepois);
+        strcat(res,": nop ");
         strcpy(ans,res);
     }
     return ans;

@@ -252,17 +252,74 @@ chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')' {if(isUndecl(stack,*$1
 */
 
 expressao: E { $$ = $1;};
-E: E TK_OC_OR T { $$ = create_node($2, EXP_OR); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); }  | T { $$ = $1; };
+E: E TK_OC_OR T { $$ = create_node($2, EXP_OR); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
+      $$->temp = generateTemp();
+      strcpy($$->code, $1->code);
+      strcat($$->code, " ");
+      strcat($$->code, $3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("or",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
+}  | T { $$ = $1; };
+      
+T: T TK_OC_AND F { $$ = create_node($2, EXP_AND); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
+      $$->temp = generateTemp();
+      strcpy($$->code, $1->code);
+      strcat($$->code, " ");
+      strcat($$->code, $3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("and",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
+} | F { $$ = $1; };
 
-T: T TK_OC_AND F { $$ = create_node($2, EXP_AND); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } | F { $$ = $1; };
+F: F TK_OC_EQ G { $$ = create_node($2, EXP_EQ); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
+      $$->temp = generateTemp();
+      strcpy($$->code, $1->code);
+      strcat($$->code, " ");
+      strcat($$->code, $3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("cmp_EQ",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
+} | F TK_OC_NE G  { $$ = create_node($2, EXP_NE); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
+      $$->temp = generateTemp();
+      strcpy($$->code, $1->code);
+      strcat($$->code, " ");
+      strcat($$->code, $3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("cmp_NE",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
+} | G { $$ = $1; };
+      
 
-F: F TK_OC_EQ G { $$ = create_node($2, EXP_EQ); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } | F TK_OC_NE G  { $$ = create_node($2, EXP_NE); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } | G { $$ = $1; };
+G: G TK_OC_GE H { $$ = create_node($2, EXP_GE); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
+      $$->temp = generateTemp();
+      strcpy($$->code, $1->code);
+      strcat($$->code, " ");
+      strcat($$->code, $3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("cmp_GE",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
 
-G: G TK_OC_GE H { $$ = create_node($2, EXP_GE); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } | 
-   G TK_OC_LE H { $$ = create_node($2, EXP_LE); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } |
-   G '<' H { $$ = create_node($2, EXP_LT); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); }  |
-   G '>' H { $$ = create_node($2, EXP_GT); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); } |
-   H { $$ = $1; };
+} | G TK_OC_LE H { $$ = create_node($2, EXP_LE); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
+      $$->temp = generateTemp();
+      strcpy($$->code, $1->code);
+      strcat($$->code, " ");
+      strcat($$->code, $3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("cmp_LE",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
+
+} | G '<' H { $$ = create_node($2, EXP_LT); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
+      $$->temp = generateTemp();
+      strcpy($$->code, $1->code);
+      strcat($$->code, " ");
+      strcat($$->code, $3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("cmp_LT",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
+
+}  | G '>' H { $$ = create_node($2, EXP_GT); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
+      $$->temp = generateTemp();
+      strcpy($$->code, $1->code);
+      strcat($$->code, " ");
+      strcat($$->code, $3->code);
+      strcat($$->code," ");
+      strcat($$->code,generateCode("cmp_GT",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
+
+} | H { $$ = $1; };
 
 H: H '+' I { $$ = create_node($2, BIN_PLUS); add_child(&$$, &$1); add_child(&$$, &$3); int ret = doCoercion($$,BIN_OP); if(ret != 0) exit (ret); 
 
