@@ -562,6 +562,7 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,"\n");
         strcat(res,labelFalse);
         strcat(res,": nop ");
+        strcat(res,"\n");
         strcpy(ans,res);
 
     }

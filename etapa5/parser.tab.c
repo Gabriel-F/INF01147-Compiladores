@@ -1789,31 +1789,31 @@ yyreduce:
 
   case 43: /* literal: TK_LIT_INT  */
 #line 221 "parser.y"
-                      { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_INT, INT_TYPE); addItem(stack, createItem(LITERAL,INT_TYPE,*(yyvsp[0].valor_lexico))); (yyval.no)->temp = generateTemp(); char valStr[100]; sprintf(valStr,"%d",(yyvsp[0].valor_lexico)->tokenValue.valInt); strcpy((yyval.no)->code,generateCode("loadI",valStr,(yyval.no)->temp, NULL));  }
+                      { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_INT, INT_TYPE); /*addItem(stack, createItem(LITERAL,INT_TYPE,*$1));*/ (yyval.no)->temp = generateTemp(); char valStr[100]; sprintf(valStr,"%d",(yyvsp[0].valor_lexico)->tokenValue.valInt); strcpy((yyval.no)->code,generateCode("loadI",valStr,(yyval.no)->temp, NULL));  }
 #line 1794 "parser.tab.c"
     break;
 
   case 44: /* literal: TK_LIT_CHAR  */
 #line 222 "parser.y"
-                      { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_CHAR, CHAR_TYPE); addItem(stack, createItem(LITERAL,CHAR_TYPE,*(yyvsp[0].valor_lexico)));}
+                      { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_CHAR, CHAR_TYPE); /*addItem(stack, createItem(LITERAL,CHAR_TYPE,*$1)); */}
 #line 1800 "parser.tab.c"
     break;
 
   case 45: /* literal: TK_LIT_FALSE  */
 #line 223 "parser.y"
-                      { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_BOOL, BOOL_TYPE); addItem(stack, createItem(LITERAL,BOOL_TYPE,*(yyvsp[0].valor_lexico)));}
+                      { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_BOOL, BOOL_TYPE); /*addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));*/}
 #line 1806 "parser.tab.c"
     break;
 
   case 46: /* literal: TK_LIT_TRUE  */
 #line 224 "parser.y"
-                      { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_BOOL, BOOL_TYPE); addItem(stack, createItem(LITERAL,BOOL_TYPE,*(yyvsp[0].valor_lexico)));}
+                      { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_BOOL, BOOL_TYPE); /*addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));*/}
 #line 1812 "parser.tab.c"
     break;
 
   case 47: /* literal: TK_LIT_FLOAT  */
 #line 225 "parser.y"
-                      { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_FLOAT, FLOAT_TYPE); addItem(stack, createItem(LITERAL,FLOAT_TYPE,*(yyvsp[0].valor_lexico)));}
+                      { (yyval.no) = create_leaf((yyvsp[0].valor_lexico), VAL_LIT_FLOAT, FLOAT_TYPE); /*addItem(stack, createItem(LITERAL,FLOAT_TYPE,*$1));*/}
 #line 1818 "parser.tab.c"
     break;
 

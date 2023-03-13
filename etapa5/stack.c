@@ -26,19 +26,24 @@ void push(STACK *st){
     struct hashmap *newMap = hashmap_new(sizeof(TNODE), 0, 0, 0, table_hash, table_compare, NULL,NULL); //Create new table
 
     STACKNODE *stNode = (STACKNODE*)malloc(sizeof(STACKNODE));
-    stNode->currOffset = 0;
+    
     stNode->map = newMap;
     if(st->top == NULL){
         stNode->bottom = NULL;
+        stNode->currOffset = 0;
     }else{
         stNode->bottom = st->top;
+        if(st->top->bottom == NULL){ //Is global
+            stNode->currOffset = 0;
+        }else{
+            stNode->currOffset = st->top->currOffset; //It happens when there is a scope inside a function or a scope inside another scope
+        }
     }
     st->top = stNode;
     
 }
 
 void pop(STACK *st){
-    //printf("pop stack\n");
     hashmap_free(st->top->map);//Free table (map)
     st->top = st->top->bottom; //Update top
     
@@ -50,9 +55,8 @@ TNODE * findNode(STACKNODE *st, char * identifier){
         return NULL;
     TNODE * tNode = NULL;
     
-    //There is a problem when we add literal, because it can have literals with the same input eg: a = 'c'; b = 'c'; Hash need more information
     tNode = (TNODE*)hashmap_get(st->map, &(TNODE){ .lexical_value.input = identifier });
-    if(tNode == NULL){ //If not found go down on stack
+    if(tNode == NULL){ //If not found go down in stack
         return findNode(st->bottom, identifier);
     }else{
         return tNode;
@@ -70,6 +74,7 @@ TNODE * find(STACK *st, char * identifier){
 void addItem(STACK *st, TNODE * value){
     STACKNODE * stNode = st->top;
     value->offset = st->top->currOffset;
+    //printf("add: %s offset: %d \n",value->lexical_value.input,value->offset);
     st->top->currOffset += value->size;
     hashmap_set(stNode->map, value);
     //printf("added: %s \n",value->lexical_value.input);

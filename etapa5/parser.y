@@ -218,11 +218,11 @@ comando: declaracao_var_local { $$ = $1;}|
          controle_fluxo { $$ = $1;}| 
          controle_fluxo_while { $$ = $1;};
 
-literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT, INT_TYPE); addItem(stack, createItem(LITERAL,INT_TYPE,*$1)); $$->temp = generateTemp(); char valStr[100]; sprintf(valStr,"%d",$1->tokenValue.valInt); strcpy($$->code,generateCode("loadI",valStr,$$->temp, NULL));  }| //REVISAR
-         TK_LIT_CHAR  { $$ = create_leaf($1, VAL_LIT_CHAR, CHAR_TYPE); addItem(stack, createItem(LITERAL,CHAR_TYPE,*$1));}| 
-         TK_LIT_FALSE { $$ = create_leaf($1, VAL_LIT_BOOL, BOOL_TYPE); addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));}| 
-         TK_LIT_TRUE  { $$ = create_leaf($1, VAL_LIT_BOOL, BOOL_TYPE); addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));}| 
-         TK_LIT_FLOAT { $$ = create_leaf($1, VAL_LIT_FLOAT, FLOAT_TYPE); addItem(stack, createItem(LITERAL,FLOAT_TYPE,*$1));};
+literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT, INT_TYPE); /*addItem(stack, createItem(LITERAL,INT_TYPE,*$1));*/ $$->temp = generateTemp(); char valStr[100]; sprintf(valStr,"%d",$1->tokenValue.valInt); strcpy($$->code,generateCode("loadI",valStr,$$->temp, NULL));  }| //REVISAR
+         TK_LIT_CHAR  { $$ = create_leaf($1, VAL_LIT_CHAR, CHAR_TYPE); /*addItem(stack, createItem(LITERAL,CHAR_TYPE,*$1)); */}| 
+         TK_LIT_FALSE { $$ = create_leaf($1, VAL_LIT_BOOL, BOOL_TYPE); /*addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));*/}| 
+         TK_LIT_TRUE  { $$ = create_leaf($1, VAL_LIT_BOOL, BOOL_TYPE); /*addItem(stack, createItem(LITERAL,BOOL_TYPE,*$1));*/}| 
+         TK_LIT_FLOAT { $$ = create_leaf($1, VAL_LIT_FLOAT, FLOAT_TYPE); /*addItem(stack, createItem(LITERAL,FLOAT_TYPE,*$1));*/};
 
 
 // int a, b <= 2, c, d <= 3;
