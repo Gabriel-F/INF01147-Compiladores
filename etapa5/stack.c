@@ -76,6 +76,11 @@ void addItem(STACK *st, TNODE * value){
     value->offset = st->top->currOffset;
     //printf("add: %s offset: %d \n",value->lexical_value.input,value->offset);
     st->top->currOffset += value->size;
+    if(st->top->bottom == NULL){
+        value->isGlobal = true;
+    }else{
+        value->isGlobal = false;
+    }
     hashmap_set(stNode->map, value);
     //printf("added: %s \n",value->lexical_value.input);
 }
@@ -254,8 +259,8 @@ TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * a
     return tNode;
 }
 
-int getOffset(STACK *st, char * identifier){
+TNODE * getOffset(STACK *st, char * identifier){
     TNODE * found = find(st,identifier);
-
-    return found->offset;
+    
+    return found;
 }

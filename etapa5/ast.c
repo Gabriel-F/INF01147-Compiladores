@@ -574,6 +574,29 @@ void imprimeCodigo(void *node){
     printf("%s",rootNode->code);
 }
 
+char * initializeRegisters(char * code){
+    char * ans = malloc(1000);
+    int commandCnt = 0;
+    for(int i=0;i<strlen(code);i++){
+        if(code[i] == '\n'){
+            commandCnt++;
+        }
+    }
+    char commandStr[100];
+    sprintf(commandStr,"%d",commandCnt+5);
+    char loadrbss[1000] = "loadI ";
+    strcat(loadrbss,commandStr);
+    strcat(loadrbss," => rbss \n");
+
+    char registers[1000] = "loadI 1024 => rfp \n";
+    strcat(registers,"loadI 1024 => rsp \n");
+    strcat(registers,loadrbss);
+
+    strcpy(ans,registers);
+    return ans;
+
+}
+
 //Dont need to check whether indexes of array are integers?
 //bool isInteger(ASTNODE * root){
 //    return root->dataType == INT_TYPE;

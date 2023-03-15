@@ -120,7 +120,7 @@ extern Array arr;
 
 
 
-programa: lista_de_elementos { arvore = $$;  pop(stack); }; // REVISAR
+programa: lista_de_elementos { arvore = $$;  pop(stack); char fullCode[2000]; strcpy(fullCode,initializeRegisters($$->code)); strcat(fullCode,$$->code); strcpy($$->code,fullCode); }; // REVISAR
 programa: { $$ = 0; };
 
 //lista_de_elementos: lista_de_elementos declaracao_funcao { if($1 == 0){ $$ = $2; } else { $$ = $1; add_child(&$$, &$2);} }; //I think it's impossible to do this with left recursion
@@ -233,17 +233,37 @@ identificador_local: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*
 
 //Inicialization
 //
-      strcpy($$->code,$3->code);
-      char valStr[100]; sprintf(valStr,"%d",getOffset(stack,$1->value->input));
-      strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));
+      strcpy($$->code,$3->code); char valStr[100];
+      TNODE * offs = getOffset(stack,$1->value->input);
+      if(offs->isGlobal){
+            sprintf(valStr,"%d",offs->offset); //get offset on symbol table
+            strcat($$->code,generateCode("storeAI",strdup($3->temp),"rbss",valStr));
+      }else{
+            sprintf(valStr,"%d",offs->offset); //get offset on symbol table
+            strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));
+      }
+
+      //char valStr[100]; sprintf(valStr,"%d",getOffset(stack,$1->value->input));
+      //strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));
 
 };
 
 lista_de_identificadores_local: lista_de_identificadores_local ',' identificador_local { if($3 != 0){$$ = $3; add_child(&$$, &$1);} } | identificador_local { $$ = $1; };
 
 atribuicao: identificador_expressao '=' expressao {$$ = create_node($2, ATRIBUICAO); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,ATRIBUICAO); if(ret != 0) exit (ret);
- strcpy($$->code,$3->code); char valStr[100]; sprintf(valStr,"%d",getOffset(stack,$1->value->input));
- strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));} ;
+      strcpy($$->code,$3->code); char valStr[100];
+      TNODE * offs = getOffset(stack,$1->value->input);
+      if(offs->isGlobal){
+            sprintf(valStr,"%d",offs->offset); //get offset on symbol table
+            strcat($$->code,generateCode("storeAI",strdup($3->temp),"rbss",valStr));
+      }else{
+            sprintf(valStr,"%d",offs->offset); //get offset on symbol table
+            strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));
+      }
+}
+
+      //sprintf(valStr,"%d",getOffset(stack,$1->value->input));
+      //strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));} ;
 
 lista_argumentos: argumentos_entrada { $$ = $1; } | { $$ = 0; };
 argumentos_entrada: argumentos_entrada ',' argumento { $$ = $1; add_child(&$$, &$3); } | argumento { $$ = $1; };
@@ -419,8 +439,15 @@ identificador_expressao: TK_IDENTIFICADOR { if(isUndecl(stack,*$1)) { printError
 
       $$->temp = generateTemp();
       char valStr[100];
-      sprintf(valStr,"%d",getOffset(stack,$1->input)); //get offset on symbol table
-      strcat($$->code,generateCode("loadAI","rfp", valStr,$$->temp));
+      TNODE * offs = getOffset(stack,$1->input);
+      if(offs->isGlobal){
+            sprintf(valStr,"%d",offs->offset); //get offset on symbol table
+            strcat($$->code,generateCode("loadAI","rbss", valStr,$$->temp));
+      }else{
+            sprintf(valStr,"%d",offs->offset); //get offset on symbol table
+            strcat($$->code,generateCode("loadAI","rfp", valStr,$$->temp));
+      }
+      
 
 } | TK_IDENTIFICADOR '[' lista_expressoes ']' 
 {  if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); exit (ERR_UNDECLARED); } if(!checkUse(stack,*$1, ARRAY)){ exit( printErrorUse(*$1,ARRAY, find(stack,$1->input))) ;} $$ = create_node($2, IDENT_EXP); ASTNODE * identLeaf = create_leaf($1,IDENTIFICADOR, getType(stack,*$1));  add_child(&$$,&identLeaf); add_child(&$$,&$3); doCoercion($$, UN_OP); deleteValue($4); } ; //Cant pass type here, needs to check the hashtable

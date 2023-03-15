@@ -28,6 +28,7 @@ typedef struct tableNode{
     int size;
     VALOR_T lexical_value;
     int offset;
+    bool isGlobal;
 
 }TNODE;
 
@@ -62,6 +63,6 @@ bool checkUse(STACK *st, VALOR_T var, int type); //Checks if it's well used
 
 int getType(STACK * st, VALOR_T identifier);
 
-int getOffset(STACK *st, char * identifier);
+TNODE * getOffset(STACK *st, char * identifier);
 
 TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * arr);

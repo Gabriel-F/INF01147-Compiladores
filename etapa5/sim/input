@@ -1,3 +1,6 @@
+loadI 1024 => rfp 
+loadI 1024 => rsp 
+loadI 45 => rbss 
 loadI 5 => r0
 storeAI r0 => rfp, 0
 loadI 0 => r1

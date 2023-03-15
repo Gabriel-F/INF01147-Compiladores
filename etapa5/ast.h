@@ -140,6 +140,8 @@ char * generateRotulo();
 
 char * generateCode(char *mnem, const char * reg1, const char * reg2, const char * reg3);
 
+char * initializeRegisters(char * code);
+
 //bool isIngeger(ASTNODE * node);
 
 //void printErrorIndexNotInteger(ASTNODE * node);
