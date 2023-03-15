@@ -3,7 +3,7 @@
 %define parse.error verbose
 %{
 
-#include <stdio.h>
+
 #include <stdlib.h>
 #include "ast.h"
 #include "stack.h"
@@ -17,6 +17,10 @@ extern int get_line_number();
 
 extern void *stack;
 int currType = 0;
+
+int sizeOfCurrentFrame = 0;
+
+char mainLabel[10];
 
 extern Array arr;
 
@@ -120,7 +124,7 @@ extern Array arr;
 
 
 
-programa: lista_de_elementos { arvore = $$;  pop(stack); char fullCode[2000]; strcpy(fullCode,initializeRegisters($$->code)); strcat(fullCode,$$->code); strcpy($$->code,fullCode); }; // REVISAR
+programa: lista_de_elementos { arvore = $$;  pop(stack); char fullCode[2000]; strcpy(fullCode,initializeRegisters($$->code)); strcat(fullCode,jumpToMain(mainLabel)); strcat(fullCode,$$->code); strcat(fullCode,"halt\n"); strcpy($$->code,fullCode);  }; // REVISAR
 programa: { $$ = 0; };
 
 //lista_de_elementos: lista_de_elementos declaracao_funcao { if($1 == 0){ $$ = $2; } else { $$ = $1; add_child(&$$, &$2);} }; //I think it's impossible to do this with left recursion
@@ -175,15 +179,27 @@ declaracao_funcao: cabecalho corpo  { $$ = create_node($1, IDENTIFICADOR); add_c
 
       //Do the function things
       // ....
-
-      if($2 != NULL)
+      char * rotulo = generateRotulo();
+      insertFunctionLabel(stack,$1->input,rotulo);
+      updateSizeOfCurrentFrame(stack, $1->input, sizeOfCurrentFrame); //It is important when we create a new Frame
+      if(strcmp($1->input,"main") == 0){
+            strcpy(mainLabel,rotulo);
+      }
+      if($2 != NULL){
+            strcat($$->code,rotulo);
+            strcat($$->code,": \n");
+            strcat($$->code,genFrame(stack,$1->input));
+            
             strcat($$->code,$2->code);
-
+            
+      }
+     
+      sizeOfCurrentFrame = 0; 
  };
 cabecalho: tipo TK_IDENTIFICADOR { if(isDecl(stack,*$2)) { printErrorDecl(*$2,find(stack,$2->input)); exit (ERR_DECLARED);} addItem(stack, createItem(FUNCTION,currType,*$2)); push(stack); }'(' lista_parametros ')' { $$ = $2; };
 lista_parametros: parametros_entrada { $$ = 0; } | { $$ = 0;};
 parametros_entrada: parametros_entrada ',' parametro { $$ = 0; } | parametro { $$ = 0; };
-parametro: tipo TK_IDENTIFICADOR { if(isDecl(stack,*$2)) { printErrorDecl(*$2,find(stack,$2->input)); exit (ERR_DECLARED);} addItem(stack, createItem(VARIABLE,currType,*$2)); $$ = 0; deleteValue($2);};
+parametro: tipo TK_IDENTIFICADOR { if(isDecl(stack,*$2)) { printErrorDecl(*$2,find(stack,$2->input)); exit (ERR_DECLARED);} addItem(stack, createItem(VARIABLE,currType,*$2)); sizeOfCurrentFrame+=4; $$ = 0; deleteValue($2);};
 
 corpo : bloco_comandos { $$ = $1; };
 
@@ -229,8 +245,8 @@ literal: TK_LIT_INT   { $$ = create_leaf($1, VAL_LIT_INT, INT_TYPE); /*addItem(s
 
 declaracao_var_local: tipo lista_de_identificadores_local { $$ = $2; };
 
-identificador_local: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); exit (ERR_DECLARED);} addItem(stack, createItem(VARIABLE,currType,*$1)); $$=0; deleteValue($1); } | identificador TK_OC_LE literal { $$ = create_node($2, INIC_VAR); add_child(&$$,&$1); add_child(&$$,&$3); int ret = doCoercion($$,INIC_VAR); if(ret != 0) exit (ret); 
-
+identificador_local: TK_IDENTIFICADOR { if(isDecl(stack,*$1)) { printErrorDecl(*$1,find(stack,$1->input)); exit (ERR_DECLARED); sizeOfCurrentFrame+=4; } addItem(stack, createItem(VARIABLE,currType,*$1)); $$=0; deleteValue($1); sizeOfCurrentFrame+=4; } | identificador TK_OC_LE literal { $$ = create_node($2, INIC_VAR); add_child(&$$,&$1); add_child(&$$,&$3); int ret = doCoercion($$,INIC_VAR); if(ret != 0) exit (ret); 
+      sizeOfCurrentFrame+=4; 
 //Inicialization
 //
       strcpy($$->code,$3->code); char valStr[100];
@@ -252,13 +268,24 @@ lista_de_identificadores_local: lista_de_identificadores_local ',' identificador
 
 atribuicao: identificador_expressao '=' expressao {$$ = create_node($2, ATRIBUICAO); add_child(&$$, &$1); add_child(&$$,&$3); int ret = doCoercion($$,ATRIBUICAO); if(ret != 0) exit (ret);
       strcpy($$->code,$3->code); char valStr[100];
+
+      TNODE * found = find(stack,$3->value->input);
+      
+
       TNODE * offs = getOffset(stack,$1->value->input);
+      //printf("Funcao: %s , category: %d\n",found->lexical_value.input,found->category);
       if(offs->isGlobal){
             sprintf(valStr,"%d",offs->offset); //get offset on symbol table
-            strcat($$->code,generateCode("storeAI",strdup($3->temp),"rbss",valStr));
+           // if(found != NULL && found->category == FUNCTION){
+           //       strcat($$->code,generateCode("getValueOfFunction","rbss",valStr, NULL));
+           // }else
+                  strcat($$->code,generateCode("storeAI",strdup($3->temp),"rbss",valStr));
       }else{
             sprintf(valStr,"%d",offs->offset); //get offset on symbol table
-            strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));
+            //if(found != NULL && found->category == FUNCTION)
+            //      strcat($$->code,generateCode("getValueOfFunction","rfp",valStr, NULL));
+            //else 
+                  strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));
       }
 }
 
@@ -303,9 +330,23 @@ controle_fluxo_while: TK_PR_WHILE '(' expressao ')' push_stack bloco_comandos { 
 
 } ;
 
-retorno: TK_PR_RETURN expressao { $$ = create_node( $1, RETURN); add_child(&$$,&$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); } ;
+retorno: TK_PR_RETURN expressao { $$ = create_node( $1, RETURN); add_child(&$$,&$2); int ret = doCoercion($$,UN_OP); if(ret != 0) exit (ret); 
+      strcpy($$->code,$2->code);
+      strcat($$->code,generateCode("return",$2->temp, NULL, NULL));
+      strcat($$->code,genEpilogue());
+} ;
 
-chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')' {if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); exit (ERR_UNDECLARED); } if(!checkUse(stack,*$1, FUNCTION)){ exit ( printErrorUse(*$1,FUNCTION, find(stack,$1->input))); } $$ = create_node($1, CHAMADA_FUNC); add_child(&$$, &$3); int ret = doCoercionWithType($$,CHAMADA_FUNC,getType(stack,*$1)); if(ret != 0) exit (ret); } ;
+chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')' {if(isUndecl(stack,*$1)) { printErrorUndecl(*$1); exit (ERR_UNDECLARED); } if(!checkUse(stack,*$1, FUNCTION)){ exit ( printErrorUse(*$1,FUNCTION, find(stack,$1->input))); } $$ = create_node($1, CHAMADA_FUNC); add_child(&$$, &$3); int ret = doCoercionWithType($$,CHAMADA_FUNC,getType(stack,*$1)); if(ret != 0) exit (ret);
+
+      char * label = getFunctionLabel(stack,$1->input);
+      //printf("go to label: %s",label);
+      char *functionToBeCalled = $1->input;
+      //printf("prologue: %s\n",getPrologue(stack, functionToBeCalled));
+      strcpy($$->code,getPrologue(stack, functionToBeCalled));
+      $$->temp = generateTemp();
+      strcat($$->code,generateCode("getValueOfFunction",$$->temp,NULL, NULL));
+
+ } ;
 
 /* -----------------------------------------------------------------------
 	

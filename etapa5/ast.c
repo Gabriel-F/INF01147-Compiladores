@@ -525,7 +525,8 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,labelDepois);
         strcat(res,": ");
         strcpy(ans,res);
-    }else if(strcmp(mnem,"while") == 0){
+    }
+    if(strcmp(mnem,"while") == 0){
         char res[5000];
 
         char * tempZero = generateTemp();
@@ -566,6 +567,27 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcpy(ans,res);
 
     }
+    if(strcmp(mnem,"return") == 0){
+        char res[5000] = "storeAI ";
+        strcat(res,reg1);
+        strcat(res," => rfp, 12\n");
+        strcpy(ans,res);
+        
+    }
+
+    if(strcmp(mnem,"getValueOfFunction") == 0){
+        char * funcRes = generateTemp();
+        char res[5000] = "loadAI rsp, 12 => ";
+        strcat(res,funcRes);
+        strcat(res,"\n");
+        strcat(res,"i2i ");
+        strcat(res,funcRes);
+        strcat(res," => ");
+        strcat(res,reg1);
+        strcat(res,"\n");
+        strcpy(ans,res);
+        
+    }
     return ans;
 }
 
@@ -583,7 +605,7 @@ char * initializeRegisters(char * code){
         }
     }
     char commandStr[100];
-    sprintf(commandStr,"%d",commandCnt+5);
+    sprintf(commandStr,"%d",commandCnt+30);
     char loadrbss[1000] = "loadI ";
     strcat(loadrbss,commandStr);
     strcat(loadrbss," => rbss \n");
@@ -597,8 +619,12 @@ char * initializeRegisters(char * code){
 
 }
 
-//Dont need to check whether indexes of array are integers?
-//bool isInteger(ASTNODE * root){
-//    return root->dataType == INT_TYPE;
-//}
+char * jumpToMain(char * mainLabel){
+    char * ans = malloc(1000);
+    char res[1000] = "jumpI => ";
+    strcat(res,mainLabel);
+    strcat(res,"\n");
+    strcpy(ans,res);
+    return ans; 
+}
 

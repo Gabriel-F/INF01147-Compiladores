@@ -142,6 +142,8 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
 
 char * initializeRegisters(char * code);
 
+char * jumpToMain(char * mainLabel);
+
 //bool isIngeger(ASTNODE * node);
 
 //void printErrorIndexNotInteger(ASTNODE * node);

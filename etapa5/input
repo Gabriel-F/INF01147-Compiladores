@@ -1,8 +1,15 @@
+int bar(){
+	int a<=100;
+	a = a + 10;
+	return a;
+}
 
-int a;
+int foo(){
+	return 1 + bar();
+
+}
 
 int main(){
-	a = 2;
-	int a;
-	a = 3;
+	int a <= 2;
+	a = foo();
 }

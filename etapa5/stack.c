@@ -28,13 +28,13 @@ void push(STACK *st){
     STACKNODE *stNode = (STACKNODE*)malloc(sizeof(STACKNODE));
     
     stNode->map = newMap;
-    if(st->top == NULL){
+    if(st->top == NULL){ //Global
         stNode->bottom = NULL;
         stNode->currOffset = 0;
     }else{
         stNode->bottom = st->top;
-        if(st->top->bottom == NULL){ //Is global
-            stNode->currOffset = 0;
+        if(st->top->bottom == NULL){ //Function
+            stNode->currOffset = 16; // 0: return addres , 4: rsp saved, 8: rfp saved, 12: return value
         }else{
             stNode->currOffset = st->top->currOffset; //It happens when there is a scope inside a function or a scope inside another scope
         }
@@ -263,4 +263,92 @@ TNODE * getOffset(STACK *st, char * identifier){
     TNODE * found = find(st,identifier);
     
     return found;
+}
+
+void insertFunctionLabel(STACK * st, char * identifier, char * label){
+    TNODE * found = find(st,identifier);
+
+    strcpy(found->functionLabel,label);
+}
+
+char * getFunctionLabel(STACK * st, char * identifier){
+    char * ans = malloc(10);
+    char res[9];
+    TNODE * found = find(st,identifier);
+    strcpy(res,found->functionLabel);
+    strcpy(ans,res);
+    return ans;
+}
+
+void updateSizeOfCurrentFrame(STACK *st, char *identifier, int sizeOfFrame){
+    TNODE * found = find(st,identifier);
+    found->sizeOfFrame = sizeOfFrame+16; //16 is the prologue
+}
+
+char * getPrologue(STACK * st, char * functionToBeCalled){
+    char * label = getFunctionLabel(st,functionToBeCalled);
+    char * ans = malloc(1000);
+    char * tempPC = generateTemp();
+    char res[1000] = "i2i rpc => ";
+    strcat(res,tempPC);
+    strcat(res,"\n");
+    strcat(res,"addI ");
+    strcat(res, tempPC);
+    strcat(res,", 6 => ");
+    strcat(res,tempPC);
+    strcat(res,"\n");
+    strcat(res,"storeAI ");
+    strcat(res,tempPC);
+    strcat(res," => rsp, 0\n");
+    strcat(res,"storeAI rsp => rsp, 4\n");
+    strcat(res,"storeAI rfp => rsp, 8\n");
+    strcat(res,"jumpI => ");
+    strcat(res,label);
+    strcat(res,"\n");
+    strcpy(ans,res);
+    return ans;
+
+}
+
+char * genFrame(STACK * st,char * identifier){
+    TNODE * found = find(st,identifier);    
+    char frameSize[100];
+    sprintf(frameSize,"%d",found->sizeOfFrame); //get Frame size
+    char * ans = malloc(1000);
+    char * tempPC = generateTemp();
+    char res[1000] = "i2i rsp => rfp\n";
+    strcat(res,"addI rsp, ");
+    strcat(res,frameSize);
+    strcat(res, " => rsp\n");
+    strcpy(ans,res);
+    return ans;
+
+}
+
+char * genEpilogue(){
+    char * ans = malloc(1000);
+    char * tempPC = generateTemp();
+    char * tempRFP = generateTemp();
+    char * tempRSP = generateTemp();
+    char res[1000] = "loadAI rfp, 0 => ";
+    strcat(res,tempPC);
+    strcat(res,"\n");
+    strcat(res,"loadAI rfp,4 => ");
+    strcat(res,tempRSP);
+    strcat(res,"\n");
+    strcat(res,"loadAI rfp,8 => ");
+    strcat(res,tempRFP);
+    strcat(res,"\n");
+    strcat(res,"i2i ");
+    strcat(res,tempRSP);
+    strcat(res," => rsp\n");
+    strcat(res,"i2i ");
+    strcat(res,tempRFP);
+    strcat(res," => rfp\n");
+    strcat(res,"jump => ");
+    strcat(res,tempPC);
+    strcat(res,"\n");
+    strcpy(ans,res);
+    return ans;
+
 }

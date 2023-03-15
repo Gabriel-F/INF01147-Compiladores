@@ -1,6 +1,7 @@
 #include "hashmap.h"
 #include "ast.h"
 #include "array.h"
+#include <stdio.h>
 #define LITERAL 1
 #define VARIABLE 2
 #define ARRAY 3
@@ -29,6 +30,8 @@ typedef struct tableNode{
     VALOR_T lexical_value;
     int offset;
     bool isGlobal;
+    char functionLabel[10];
+    int sizeOfFrame;
 
 }TNODE;
 
@@ -66,3 +69,15 @@ int getType(STACK * st, VALOR_T identifier);
 TNODE * getOffset(STACK *st, char * identifier);
 
 TNODE * createItemArray(int category, int type, VALOR_T lexical_value, Array * arr);
+
+void insertFunctionLabel(STACK * st, char * identifier, char * label);
+
+char * getFunctionLabel(STACK * st, char * identifier);
+
+void updateSizeOfCurrentFrame(STACK *st, char *identifier, int sizeOfFrame); 
+
+char * getPrologue(STACK * st, char * functionToBeCalled);
+
+char * genFrame(STACK * st,char * identifier);
+
+char * genEpilogue();
