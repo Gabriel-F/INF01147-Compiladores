@@ -296,7 +296,10 @@ lista_argumentos: argumentos_entrada { $$ = $1;
       strcat($$->code,setArguments($$));
 
 } | { $$ = 0; };
-argumentos_entrada: argumentos_entrada ',' argumento { $$ = $1; add_child(&$$, &$3); } | argumento { $$ = $1; };
+argumentos_entrada: argumentos_entrada ',' argumento { $$ = $1; add_child(&$$, &$3); 
+      strcat($$->code,$3->code);
+
+} | argumento { $$ = $1; };
 argumento: expressao { $$ = $1; };
 
 controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos  { $$ = create_node($1, IF); add_child(&$$,&$3); add_child(&$$,&$7); int ret = doCoercion($$,IF); if(ret != 0) exit (ret);  

@@ -1,10 +1,11 @@
-int foo(int a){
-	int b <= 100;
-	return 1 + 2 * b;
+int soma(int a, int b){
+	int c;
+	c = a + b;
+	return c;
 
 }
 
 int main(){
 	int a <= 2;
-	a = foo(10);
+	a = soma(10,50);
 }
