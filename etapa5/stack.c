@@ -287,7 +287,7 @@ void updateSizeOfCurrentFrame(STACK *st, char *identifier, int sizeOfFrame){
 
 char * getPrologue(STACK * st, char * functionToBeCalled){
     char * label = getFunctionLabel(st,functionToBeCalled);
-    char * ans = malloc(1000);
+    char * ans = malloc(10000);
     char * tempPC = generateTemp();
     char res[1000] = "i2i rpc => ";
     strcat(res,tempPC);
@@ -314,9 +314,9 @@ char * genFrame(STACK * st,char * identifier){
     TNODE * found = find(st,identifier);    
     char frameSize[100];
     sprintf(frameSize,"%d",found->sizeOfFrame); //get Frame size
-    char * ans = malloc(1000);
+    char * ans = malloc(10000);
     char * tempPC = generateTemp();
-    char res[1000] = "i2i rsp => rfp\n";
+    char res[10000] = "i2i rsp => rfp\n";
     strcat(res,"addI rsp, ");
     strcat(res,frameSize);
     strcat(res, " => rsp\n");
@@ -330,7 +330,7 @@ char * genEpilogue(){
     char * tempPC = generateTemp();
     char * tempRFP = generateTemp();
     char * tempRSP = generateTemp();
-    char res[1000] = "loadAI rfp, 0 => ";
+    char res[10000] = "loadAI rfp, 0 => ";
     strcat(res,tempPC);
     strcat(res,"\n");
     strcat(res,"loadAI rfp,4 => ");

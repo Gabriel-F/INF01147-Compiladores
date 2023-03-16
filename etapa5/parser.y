@@ -124,7 +124,7 @@ extern Array arr;
 
 
 
-programa: lista_de_elementos { arvore = $$;  pop(stack); char fullCode[2000]; strcpy(fullCode,initializeRegisters($$->code)); strcat(fullCode,jumpToMain(mainLabel)); strcat(fullCode,$$->code); strcat(fullCode,"halt\n"); strcpy($$->code,fullCode);  }; // REVISAR
+programa: lista_de_elementos { arvore = $$;  pop(stack); char fullCode[10000]; strcpy(fullCode,initializeRegisters($$->code)); strcat(fullCode,jumpToMain(mainLabel)); strcat(fullCode,$$->code); strcat(fullCode,"halt\n"); strcpy($$->code,fullCode);  }; // REVISAR
 programa: { $$ = 0; };
 
 //lista_de_elementos: lista_de_elementos declaracao_funcao { if($1 == 0){ $$ = $2; } else { $$ = $1; add_child(&$$, &$2);} }; //I think it's impossible to do this with left recursion
@@ -412,6 +412,7 @@ G: G TK_OC_GE H { $$ = create_node($2, EXP_GE); add_child(&$$, &$1); add_child(&
       $$->temp = generateTemp();
       strcpy($$->code, $1->code);
       strcat($$->code, $3->code);
+      printf("%s\n", $$->code);
       strcat($$->code,generateCode("cmp_GT",$1->temp,$3->temp,$$->temp)); // will generate tempOpaca inside generateCode
 
 } | H { $$ = $1; };
