@@ -512,4 +512,3 @@ void yyerror(char const *s){
 	printf("%s na linha: %d\n", s,get_line_number());
 	
 }
-

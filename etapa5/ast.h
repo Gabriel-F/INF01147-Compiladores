@@ -112,7 +112,7 @@ typedef struct astNode{
     VALOR_T * value;
     struct astChildren * children;
     int dataType;
-    char code[1000];
+    char code[10000];
     char * temp;
 } ASTNODE;
 

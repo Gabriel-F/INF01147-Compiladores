@@ -361,7 +361,7 @@ char *generateRotulo(){
 }
 
 char * generateCode(char *mnem, const char * reg1, const char * reg2, const char * reg3){
-    char * ans = malloc(1000);
+    char * ans = malloc(5000);
     if(strcmp(mnem,"neg") == 0){
         //multiply for -1
         char res[200] = "multI ";
@@ -477,7 +477,7 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,": ");
         strcat(res,reg2); //Code inside of if
         strcat(res,labelFalse);
-        strcat(res,": nop ");
+        strcat(res,": nop \n");
         strcpy(ans,res);
     }
     if(strcmp(mnem,"if_else") == 0){
