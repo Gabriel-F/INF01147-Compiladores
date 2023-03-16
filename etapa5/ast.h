@@ -144,6 +144,8 @@ char * initializeRegisters(char * code);
 
 char * jumpToMain(char * mainLabel);
 
+char * setArguments(ASTNODE * node);
+
 //bool isIngeger(ASTNODE * node);
 
 //void printErrorIndexNotInteger(ASTNODE * node);

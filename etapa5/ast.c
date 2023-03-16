@@ -628,3 +628,25 @@ char * jumpToMain(char * mainLabel){
     return ans; 
 }
 
+char * setArguments(ASTNODE * node){
+    char * ans = malloc(1000);
+    int offset = 16;
+    char valStr[10];
+    
+    char res[1000] = "";
+    while(node != NULL){
+        strcat(res,"storeAI ");
+        strcat(res,node->temp);
+        strcat(res," => rsp, ");
+        sprintf(valStr,"%d",offset);
+        strcat(res,valStr);
+        strcat(res,"\n");
+        offset+=4; //Int hard coded
+        if(node->children == NULL)
+            break;
+        node = node->children->child;
+    }
+    strcpy(ans,res);
+    return ans;
+}
+

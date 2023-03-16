@@ -292,7 +292,10 @@ atribuicao: identificador_expressao '=' expressao {$$ = create_node($2, ATRIBUIC
       //sprintf(valStr,"%d",getOffset(stack,$1->value->input));
       //strcat($$->code,generateCode("storeAI",strdup($3->temp),"rfp",valStr));} ;
 
-lista_argumentos: argumentos_entrada { $$ = $1; } | { $$ = 0; };
+lista_argumentos: argumentos_entrada { $$ = $1; 
+      strcat($$->code,setArguments($$));
+
+} | { $$ = 0; };
 argumentos_entrada: argumentos_entrada ',' argumento { $$ = $1; add_child(&$$, &$3); } | argumento { $$ = $1; };
 argumento: expressao { $$ = $1; };
 
@@ -342,7 +345,8 @@ chamada_funcao: TK_IDENTIFICADOR '(' lista_argumentos ')' {if(isUndecl(stack,*$1
       //printf("go to label: %s",label);
       char *functionToBeCalled = $1->input;
       //printf("prologue: %s\n",getPrologue(stack, functionToBeCalled));
-      strcpy($$->code,getPrologue(stack, functionToBeCalled));
+      strcat($$->code,$3->code);
+      strcat($$->code,getPrologue(stack, functionToBeCalled));
       $$->temp = generateTemp();
       strcat($$->code,generateCode("getValueOfFunction",$$->temp,NULL, NULL));
 
