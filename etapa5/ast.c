@@ -481,8 +481,9 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcpy(ans,res);
     }
     if(strcmp(mnem,"if_else") == 0){
+        bool jumpNoCodeTrue = false;
+        bool jumpNoCodeFalse = false;
         char res[8000];
-
         char * tempZero = generateTemp();
         char * tempRes = generateTemp();
         char * labelTrue = generateRotulo();
@@ -502,26 +503,40 @@ char * generateCode(char *mnem, const char * reg1, const char * reg2, const char
         strcat(res,"cbr ");
         strcat(res,tempRes);
         strcat(res," -> ");
-        if(reg2 != NULL)
+
+        if(reg2 != NULL){
+            
             strcat(res, labelTrue); //expr == true
-        else
+            
+        }else{
+            
             strcat(res,labelDepois); //Occurs when there is no command in true block
+            jumpNoCodeTrue = true;
+        }
         strcat(res,", ");
         if(reg3 != NULL)
             strcat(res, labelFalse); //expr == true
-        else
+        else{
+            
             strcat(res,labelDepois); //Occurs when there is no command in true block
-        strcat(res,"\n");
-        strcat(res,labelTrue);
-        strcat(res,": ");
-        strcat(res,reg2); //Code inside of if
-        strcat(res,"jumpI -> ");
-        strcat(res,labelDepois);
+            jumpNoCodeFalse = true;
+        }
 
         strcat(res,"\n");
-        strcat(res,labelFalse);
-        strcat(res,": ");
-        strcat(res,reg3);
+        if(!jumpNoCodeTrue){
+            strcat(res,labelTrue);
+            strcat(res,": ");
+            strcat(res,reg2); //Code inside of if
+            strcat(res,"jumpI -> ");
+            strcat(res,labelDepois);
+             strcat(res,"\n");
+        }
+        if(!jumpNoCodeFalse){
+            strcat(res,labelFalse);
+            strcat(res,": ");
+            strcat(res,reg3);
+        }
+
         strcat(res,labelDepois);
         strcat(res,": ");
         strcpy(ans,res);

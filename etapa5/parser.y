@@ -318,11 +318,12 @@ controle_fluxo: TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos 
 } | TK_PR_IF '(' expressao ')' TK_PR_THEN push_stack bloco_comandos TK_PR_ELSE push_stack bloco_comandos { $$ = create_node($1, IF_ELSE); add_child(&$$,&$3); add_child(&$$,&$7); add_child(&$$,&$10); int ret = doCoercion($$,IF_ELSE); if(ret != 0) exit (ret);
       
       strcpy($$->code,$3->code);
+      
       if($7 != NULL && $10 != NULL){
             strcat($$->code,generateCode("if_else",$3->temp, $7->code, $10->code)); //Pass expression value and the code of command block
-      }else if($7 == NULL){
+      }else if($7 == NULL && $10 != NULL){
             strcat($$->code,generateCode("if_else",$3->temp, NULL, $10->code)); //Pass expression value and the code of command block
-      }else if($10 == NULL){
+      }else if($10 == NULL && $7 != NULL){
             strcat($$->code,generateCode("if_else",$3->temp, $7->code, NULL)); //Pass expression value and the code of command block
       }
 
