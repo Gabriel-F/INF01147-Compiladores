@@ -329,7 +329,11 @@ char * genEpilogue(){
     char * ans = malloc(1000);
     char * tempPC = generateTemp();
     char * tempRFP = generateTemp();
+    char * tempZero = generateTemp();
+    char * tempOpaca = generateTemp();
     char * tempRSP = generateTemp();
+    char * hlt = generateRotulo();
+    char * cont = generateRotulo();
     char res[10000] = "loadAI rfp, 0 => ";
     strcat(res,tempPC);
     strcat(res,"\n");
@@ -339,6 +343,30 @@ char * genEpilogue(){
     strcat(res,"loadAI rfp,8 => ");
     strcat(res,tempRFP);
     strcat(res,"\n");
+
+    strcat(res,"loadI 0 => ");
+    strcat(res,tempZero);
+    strcat(res,"\n");
+    strcat(res,"cmp_EQ ");
+    strcat(res,tempRFP);
+    strcat(res,", ");
+    strcat(res,tempZero);
+    strcat(res," -> ");
+    strcat(res,tempOpaca);
+    strcat(res,"\n");
+    strcat(res,"cbr ");
+    strcat(res,tempOpaca);
+    strcat(res," -> ");
+    strcat(res,hlt);
+    strcat(res, ", ");
+    strcat(res,cont);
+    strcat(res,"\n");
+    strcat(res,hlt);
+    strcat(res,": \n");
+    strcat(res,"halt\n");
+
+    strcat(res,cont);
+    strcat(res,": \n");
     strcat(res,"i2i ");
     strcat(res,tempRSP);
     strcat(res," => rsp\n");
