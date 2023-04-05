@@ -1,0 +1,15 @@
+int main(){
+	int a;
+	a = 36;
+	int b <= 4;
+	
+	int result;
+	result = a/b;
+
+	if( a - 60 + 10 < b + result + 5 )then {
+		a = 0;
+		return a;
+	};
+
+	return result;
+}
